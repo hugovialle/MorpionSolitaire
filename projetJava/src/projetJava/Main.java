@@ -11,9 +11,9 @@ public class Main extends JFrame{
         		
         		
         		
-                Grid grid = new Grid(500,500,50,50); //taille de la grille, colonnes, lignes
+                Grid grid = new Grid(40,750,750); //taille de la grille, colonnes, lignes
                 JFrame f = new JFrame();
-                f.setPreferredSize(new Dimension(500, 500));
+                f.setPreferredSize(new Dimension(750, 750));
     			f.setLocationRelativeTo(null);
                 f.add(grid);
                 f.pack();

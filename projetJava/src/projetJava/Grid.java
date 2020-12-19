@@ -10,18 +10,16 @@ import javax.swing.JPanel;
 
 public class Grid extends JPanel {
 
-   int width, height, columns, rows;
+   int width, height;
    final int POINT_SIZE = 10;
    ArrayList<Point> points = new ArrayList<>();
+   int square;
    
-   
-   public Grid(int wid,int hei, int cols,int rws) {
+   public Grid(int square, int wid, int hei) {
 	   this.width = wid;
 	   this.height = hei;
 	   this.setSize(this.width, this.height);
-	   this.columns = cols;
-	   this.rows = rws;
-	   
+	   this.square = square;
    }
    
    
@@ -38,16 +36,29 @@ public class Grid extends JPanel {
 
 
    public void draw(Graphics2D g2d) {
-	   g2d.scale(3,3);
+	   int Xmiddle = width/2;
+	   int Ymiddle = height/2;
+	   int xcal = (Xmiddle-(square/2))%square;
+	   int ycal = (Ymiddle-(square/2))%square;
+	  
 	   g2d.setColor(Color.gray);
 	   //draw rows
-	   for(int i = 0; i < rows; i++) {
-		   g2d.drawLine(0, i*(height/rows), width, i*(height/rows));
+	   for(int i = 0; i <= width/square; i++) {
+		   g2d.setColor(Color.gray);
+		   g2d.drawLine(0, ycal+i*square, width, ycal+i*square);
+		   
+		   //AJOUT DE TOUS LES POINTS POSSIBLE DANS LARRAYLIST points
+		   for (int j = 0; j <= width/square; j++) {
+			   Point p = new Point(ycal+i*square-5, xcal+j*square-5);
+			   points.add(p);
+			   
+		   }
+		   
 	   }
 	   
 	   //draw columns
-	   for (int i =0; i<columns; i++) {
-		   g2d.drawLine(i*(height/rows), 0, i*(height/rows), height);
+	   for (int i =0; i<=height/square; i++) {
+		   g2d.drawLine(xcal+i*square, 0, xcal+i*square, height);
 	   }
 	   g2d.setColor(Color.black);
 	   
@@ -55,16 +66,15 @@ public class Grid extends JPanel {
 	   this.addMouseListener(new MouseAdapter() { // bug : quand resize de fenetre ==> points disparaissent
  		     @Override
  		     public void mousePressed(MouseEvent e) {
- 		    	getGraphics().fillOval(e.getX(), e.getY(), POINT_SIZE, POINT_SIZE); //créer un point au clic
  		    	
- 		        
- 		     }
- 		    
- 		  });
-	   
+ 		       //créer un point au clic */
+ 		    	
+ 		    	 //Test GRAPHIQUE
+ 		    	for (Point p : points) { 
+ 		    		getGraphics().fillOval((int)p.getX(),(int)p.getY(),POINT_SIZE,POINT_SIZE);
+ 		    	}
+ 		     }	    
+ 		  }); 
    }
-  
-
-
 }
 
