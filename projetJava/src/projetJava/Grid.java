@@ -1,14 +1,15 @@
 package projetJava;
+
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.Point;
+import java.util.ArrayList;
 
 public class Grid {
 	
 	 int square, width, height;
 	 int score;
-	 Point[][] points;
-	 int[][] pointState;
+	 Point[][] points; //tous les emplacements de points sur la grille
+	 int[][] pointsState; // point existant = 1 ; sinon 0
 
 	   
 	   public Grid(int square, int wid, int hei) {
@@ -17,29 +18,31 @@ public class Grid {
 		   this.square = square;
 		   this.score=0;
 		   this.points = new Point[this.width/square][this.height/square];
-		   this.pointState = new int[this.width/square][this.height/square];
+		   this.pointsState = new int[this.width/square][this.height/square];
+		   
+		   //define the state of starting cross points
 		   for(int i = 0; i<this.width/this.square; i++) {
 			   for(int j = 0; j<this.height/this.square; j++) {
 				   Point p = new Point((wid/2-(square/2))%square+i*square-5, (wid/2-(square/2))%square+j*square-5);
 				   points[i][j]=p;
 				   if(j==9 || j==10 || j==15 || j==16) {
 					   if(i==13 || i==16) {
-						   pointState[i][j]=1;
+						   pointsState[i][j]=1;
 					   }
 				   }
 				   else if(j==8 || j==17) {
 					   if(i>=13 && i<=16) {
-						   pointState[i][j]=1;
+						   pointsState[i][j]=1;
 					   }
 				   }
 				   else if(j==11 || j==14) {
 					   if(i>=10 && i<=13 || i>=16 && i<=19){
-						   pointState[i][j]=1;
+						   pointsState[i][j]=1;
 					   }
 				   }
 				   else if(j==12 || j==13) {
 					   if(i==10 || i==19) {
-						   pointState[i][j]=1;
+						   pointsState[i][j]=1;
 					   }
 				   }
 			   }
@@ -62,34 +65,133 @@ public class Grid {
 			   
 		   }
 		   
-		   //draw all points
+		   
 		   g2d.setColor(Color.black);
 		   for(int i = 0; i<this.width/this.square; i++) {
 			   for(int j = 0; j<this.height/this.square; j++) {
 
-				   if(pointState[i][j]==1) {
-					   if(points[i][j] instanceof MovePoint) {
+				   if(pointsState[i][j]==1) {
+					   if(points[i][j] instanceof MovePoint) { //draw player points
 						   ((MovePoint) points[i][j]).draw(g2d);
 					   }
-					   else {
+					   else { //draw points of the starting cross 
 						   g2d.setColor(Color.black);
-						   g2d.fillOval(points[i][j].x, points[i][j].y, 9, 9);
+						   g2d.fillOval((int)points[i][j].getX(), (int)points[i][j].getY(), 9, 9); // mettre des noms aux 2 dernieres variables
 					   }
 					   
-				   }
-				   
+				   }	   
 			   }
 		   }
 	   }
 	   
 	   public void move(int x, int y) {
-		   int xRound = Math.round(x / this.square);
+		   // coordonées par rapport aux lignes/colonnes (de 0,0 à 30,30)
+		   int xRound = Math.round(x / this.square); 
 	       int yRound = Math.round(y / this.square);
-	       int xPoint = xRound*this.square+this.square/2;
-	       int yPoint = yRound*this.square+this.square/2;
-		   MovePoint pp = new MovePoint(xPoint,yPoint,score);
-		   points[xRound][yRound]=pp;
-		   pointState[xRound][yRound]=1;
-		   this.score++;
+		   if (pointsState[xRound][yRound] == 0) {
+			   // coordonées exactes de la fenetre (de 0,0 à 900,900)
+			   int xPoint = xRound*this.square+this.square/2-5;
+		       int yPoint = yRound*this.square+this.square/2-5;
+		       //System.out.println("Point arrondi : " + xRound+","+yRound);
+		       //System.out.println("Point (coordonées Jframe) : " + xPoint+","+yPoint);
+		       ArrayList<Point> lineToDraw = new ArrayList<Point>();
+		     if (isPossibleLine(xRound,yRound, lineToDraw)) {
+		    	Point p = new Point(xPoint,yPoint);
+		    	if(p.lineValidation(lineToDraw)) {
+		    		MovePoint pp = new MovePoint(xPoint,yPoint,lineToDraw,score+1);
+					   points[xRound][yRound]=pp;
+					   pointsState[xRound][yRound]=1;
+					   this.score++;
+		    	}
+		     }
+		   }
+  
 	   }
+	   
+	// Un point peut faire parti d'une ligne si et seulement si ce point n'a pas cette direction de ligne occupée
+	   // Exemple : on veut faire une ligne horizontale : il faut check si le point n'est pas "occupé" horizontalement 
+	   // un point a 8 occupations possibles : haut, bas, gauche, droite, diag HG, diag HD, diag BG, diag BD
+	   private boolean isPossibleLine(int x, int y, ArrayList<Point> line) {
+		   if (checkHVLines(x,y,line,1,0) || 
+			   checkHVLines(x,y,line,0,1) ||
+			   checkDiagLines(x,y,line)
+			   ) 
+			   return true; 
+		return false;
+	   }
+	   
+	  
+	   
+	   private boolean checkHVLines(int x, int y, ArrayList<Point> line,int dirX, int dirY) {
+		// ajout du point cliqué dans la ligne
+		   line.add(points[x][y]);
+		   int cmpX=dirX;
+		   int cmpY=dirY;
+		   
+		   while (pointsState[x-cmpX][y-cmpY]==1 && points[x][y].getX() != x+cmpX && points[x][y].getY() != y+cmpY) {
+			   if (line.size()==5) break;
+			   line.add(points[x-cmpX][y-cmpY]);
+			   //System.out.println("Point trouve : ("+(x-cmpX)+","+(y-cmpY)+")");
+			   if(dirX != 0) cmpX++;
+			   if(dirY != 0) cmpY++;
+		   }
+		   if (line.size()==5) return true; // au lieu de ces returns trues, il faut stocker ces lignes dans un tableau
+		   									// pour pouvoir proposer au joueur si y'a plusieurs choix possibles
+		   
+		   cmpX = dirX;
+		   cmpY = dirY;
+		   while (pointsState[x+cmpX][y+cmpY]==1 && points[x][y].getX() != x+cmpX && points[x][y].getY() != y+cmpY ) {
+			   if (line.size()==5) break;
+			   line.add(points[x+cmpX][y+cmpY]);
+			   System.out.println("Point trouve : ("+(x+cmpX)+","+(y+cmpY)+")");
+			   if(dirX != 0) cmpX++;
+			   if(dirY != 0) cmpY++;
+		   }
+		   if (line.size()==5)  return true; 
+		   line.clear();
+		// if no line is drawable : 
+		   return false;
+	   }
+	   
+	   private boolean checkDiagLines(int x, int y, ArrayList<Point> line) {
+		   int incrément = 1;
+		   line.add(points[x][y]);
+		
+		// VERIF DIAGONAL UPLEFT<-->DOWNRIGHT
+		   while (pointsState[x+incrément][y+incrément]==1) {
+			   if (line.size()==5) break;
+			   line.add(points[x+incrément][y+incrément]);
+			   incrément++;
+		   }
+		   if (line.size()==5)  return true; 
+		   incrément = 1;
+		   while (pointsState[x-incrément][y-incrément]==1) {
+			   if (line.size()==5) break;
+			   line.add(points[x-incrément][y-incrément]);
+			   incrément++;
+		   }
+		   if (line.size()==5) return true;  
+		   else incrément = 1;
+		   line.clear();
+		   
+		   line.add(points[x][y]);
+		  // VERIF DIAGONAL DOWNLEFT<-->UPRIGHT
+		   while (pointsState[x-incrément][y+incrément]==1) {
+			   if (line.size()==5) break;
+			   line.add(points[x-incrément][y+incrément]);
+			   incrément++;
+		   }
+		   if (line.size()==5)  return true; 
+		    incrément = 1;
+		   while (pointsState[x+incrément][y-incrément]==1) {
+			   if (line.size()==5) break;
+			   line.add(points[x+incrément][y-incrément]);
+			   incrément++;
+		   }
+		   if (line.size()==5)  return true; 
+		   line.clear();	   	   
+	// if no line is drawable:
+		   return false;
+	   }
+
 }
