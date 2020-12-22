@@ -1,12 +1,10 @@
-package projetJava;
+package projetJavaTESTLINES;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Point {
+public class Point  {
     private int x;
     private int y;
     private Map <String, Boolean> lockedDirections; // false : direction not locked, true : direction locked
@@ -28,7 +26,7 @@ public class Point {
         return y;
     }
     
-    public void lockDirection (String direction) {
+    public void lockDirection(String direction) {
     	this.lockedDirections.put(direction, true);
     }
     
@@ -36,8 +34,24 @@ public class Point {
     	return this.lockedDirections.get(direction);
     }
     
+    public boolean isLocked(int x, int y) {
+    	if(x==1) {
+    		if(y==0) {
+    			return isLocked("LEFT") || isLocked("RIGHT");
+    		}
+    		else if(y==-1) {
+    			return isLocked("DOWNLEFT") || isLocked("UPRIGHT");
+    		}
+    		else {
+    			return isLocked("DOWNRIGHT") || isLocked("UPLEFT");
+    		}
+    	}
+    	else {
+    		return isLocked("UP") || isLocked("DOWN");
+    	}
+    }
+    
     private void setupDirections(Map<String, Boolean> map) {
-		// TODO Auto-generated method stub
 		map.put("UP",false);
 		map.put("UPRIGHT",false);
 		map.put("RIGHT",false);
@@ -48,42 +62,6 @@ public class Point {
 		map.put("UPLEFT",false);
 	}
     
-    
-    public boolean lineValidation(ArrayList<Point> line) {
-		// sort Points in the line ArrayList (cf PointSort class below)
-    	
-		Collections.sort(line, new PointSort());
-		if (line.get(0).getX() < line.get(1).getX()) { 
-			if (line.get(0).getY() == line.get(1).getY()) { //horizontal lock checker
-				for (int i = 1; i < line.size()-1 ; i++) {
-					if (line.get(0).isLocked("RIGHT") || (line.get(i).isLocked("RIGHT") && line.get(i).isLocked("LEFT"))
-							|| line.get(line.size()-1).isLocked("LEFT")) return false;
-				}
-			}
-			if(line.get(0).getY() > line.get(1).getY()){ //diagonal DOWNLEFT->UPRIGHT lock checker
-				for (int i = 1; i < line.size()-1 ; i++) {
-					if (line.get(0).isLocked("UPRIGHT") || (line.get(i).isLocked("UPRIGHT") && line.get(i).isLocked("DOWNLEFT"))
-							|| line.get(line.size()-1).isLocked("DOWNLEFT")) return false;
-				}
-			}
-		}
-		if (line.get(0).getY() < line.get(1).getY()) { 
-			if (line.get(0).getX() == line.get(1).getX()) { //vertical lock checker
-				for (int i = 1; i < line.size()-1; i++) {
-					if (line.get(0).isLocked("UP") || (line.get(i).isLocked("UP") && line.get(i).isLocked("DOWN"))
-							|| line.get(line.size()-1).isLocked("DOWN")) return false;
-				}
-			}
-			if(line.get(0).getX() < line.get(1).getX()){ //diagonal UPLEFT->DOWNRIGHT lock checker
-				for (int i = 1; i < line.size()-1; i++) {
-					if (line.get(0).isLocked("DOWNRIGHT") || (line.get(i).isLocked("DOWNRIGHT") && line.get(i).isLocked("UPLEFT"))
-							|| line.get(line.size()-1).isLocked("UPLEFT")) return false;
-				}
-			}
-		}
-		// If the points of the line are not locked in the line direction then :
-		return true;
-	}
     
  // Impl�mentation d'une comparaison entre points
  	// Source : https://stackoverflow.com/questions/3077746/how-to-sort-an-array-of-objectspoints-in-java 

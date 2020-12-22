@@ -1,8 +1,10 @@
-package projetJava;
+package projetJavaTESTLINES;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
+
 
 public class Grid {
 	
@@ -10,6 +12,7 @@ public class Grid {
 	 int score;
 	 Point[][] points; //tous les emplacements de points sur la grille
 	 int[][] pointsState; // point existant = 1 ; sinon 0
+	 ArrayList<Line> lines;
 
 	   
 	   public Grid(int square, int wid, int hei) {
@@ -19,6 +22,7 @@ public class Grid {
 		   this.score=0;
 		   this.points = new Point[this.width/square][this.height/square];
 		   this.pointsState = new int[this.width/square][this.height/square];
+		   this.lines = new ArrayList<Line>();
 		   
 		   //define the state of starting cross points
 		   for(int i = 0; i<this.width/this.square; i++) {
@@ -65,6 +69,11 @@ public class Grid {
 			   
 		   }
 		   
+		   for(int i = 0; i<lines.size(); i++) {
+			   g2d.setStroke(new BasicStroke(2));
+		       g2d.setColor(Color.red);
+			   lines.get(i).draw(g2d);
+		   }
 		   
 		   g2d.setColor(Color.black);
 		   for(int i = 0; i<this.width/this.square; i++) {
@@ -92,106 +101,90 @@ public class Grid {
 			   // coordonees exactes de la fenetre (de 0,0 a 900,900)
 			   int xPoint = xRound*this.square+this.square/2-5;
 		       int yPoint = yRound*this.square+this.square/2-5;
-		       //System.out.println("Point arrondi : " + xRound+","+yRound);
-		       //System.out.println("Point (coordon�es Jframe) : " + xPoint+","+yPoint);
-		       ArrayList<Point> lineToDraw = new ArrayList<Point>();
+
+		       Line lineToDraw = new Line();
 		       if (isPossibleLine(xRound,yRound, lineToDraw)) {
-		    	   Point p = new Point(xPoint,yPoint);
-		    	   if(p.lineValidation(lineToDraw)) {
-		    		   MovePoint pp = new MovePoint(xPoint,yPoint,lineToDraw,score+1);
-		    		   points[xRound][yRound]=pp;
-		    		   pointsState[xRound][yRound]=1;
-		    		   this.score++;
-		    	}
+		    	   addLine(lineToDraw);
+		    	   MovePoint mp = new MovePoint(xPoint,yPoint,lineToDraw,score+1);
+		    	   points[xRound][yRound]=mp;
+		    	   pointsState[xRound][yRound]=1;
+		    	   this.score++;
+
 		     }
 		   }
   
 	   }
 	   
-	// Un point peut faire parti d'une ligne si et seulement si ce point n'a pas cette direction de ligne occup�e
-	   // Exemple : on veut faire une ligne horizontale : il faut check si le point n'est pas "occup�" horizontalement 
-	   // un point a 8 occupations possibles : haut, bas, gauche, droite, diag HG, diag HD, diag BG, diag BD
-	   private boolean isPossibleLine(int x, int y, ArrayList<Point> line) {
-		   if (checkHVLines(x,y,line,1,0) || 
-			   checkHVLines(x,y,line,0,1) ||
-			   checkDiagLines(x,y,line)
+	   private boolean isPossibleLine(int x, int y, Line line) {
+		   if (checkLine(x,y,line,1,0) || 
+			   checkLine(x,y,line,0,1) ||
+			   checkLine(x,y,line,1,1) ||
+			   checkLine(x,y,line,1,-1)
 			   ) 
 			   return true; 
 		return false;
 	   }
 	   
-	  
-	   
-	   private boolean checkHVLines(int x, int y, ArrayList<Point> line,int dirX, int dirY) {
-		// ajout du point cliqu� dans la ligne
-		   line.add(points[x][y]);
-		   int cmpX=dirX;
-		   int cmpY=dirY;
-		   
-		   while (pointsState[x-cmpX][y-cmpY]==1 && points[x][y].getX() != x+cmpX && points[x][y].getY() != y+cmpY) {
-			   if (line.size()==5) break;
-			   line.add(points[x-cmpX][y-cmpY]);
-			   //System.out.println("Point trouve : ("+(x-cmpX)+","+(y-cmpY)+")");
-			   if(dirX != 0) cmpX++;
-			   if(dirY != 0) cmpY++;
-		   }
-		   if (line.size()==5) return true; // au lieu de ces returns trues, il faut stocker ces lignes dans un tableau
-		   									// pour pouvoir proposer au joueur si y'a plusieurs choix possibles
-		   
-		   cmpX = dirX;
-		   cmpY = dirY;
-		   while (pointsState[x+cmpX][y+cmpY]==1 && points[x][y].getX() != x+cmpX && points[x][y].getY() != y+cmpY ) {
-			   if (line.size()==5) break;
-			   line.add(points[x+cmpX][y+cmpY]);
-			   System.out.println("Point trouve : ("+(x+cmpX)+","+(y+cmpY)+")");
-			   if(dirX != 0) cmpX++;
-			   if(dirY != 0) cmpY++;
-		   }
-		   if (line.size()==5)  return true; 
-		   line.clear();
-		// if no line is drawable : 
-		   return false;
-	   }
-	   
-	   private boolean checkDiagLines(int x, int y, ArrayList<Point> line) {
-		   int increment = 1;
-		   line.add(points[x][y]);
-		
-		// VERIF DIAGONAL UPLEFT<-->DOWNRIGHT
-		   while (pointsState[x+increment][y+increment]==1) {
-			   if (line.size()==5) break;
-			   line.add(points[x+increment][y+increment]);
-			   increment++;
-		   }
-		   if (line.size()==5)  return true; 
-		   increment = 1;
-		   while (pointsState[x-increment][y-increment]==1) {
-			   if (line.size()==5) break;
-			   line.add(points[x-increment][y-increment]);
-			   increment++;
-		   }
-		   if (line.size()==5) return true;  
-		   else increment = 1;
-		   line.clear();
-		   
-		   line.add(points[x][y]);
-		  // VERIF DIAGONAL DOWNLEFT<-->UPRIGHT
-		   while (pointsState[x-increment][y+increment]==1) {
-			   if (line.size()==5) break;
-			   line.add(points[x-increment][y+increment]);
-			   increment++;
-		   }
-		   if (line.size()==5)  return true; 
-		    increment = 1;
-		   while (pointsState[x+increment][y-increment]==1) {
-			   if (line.size()==5) break;
-			   line.add(points[x+increment][y-increment]);
-			   increment++;
-		   }
-		   if (line.size()==5)  return true; 
-		   line.clear();	   	   
-	// if no line is drawable:
-		   return false;
-	   }
+	   private boolean checkLine(int x, int y, Line line,int dirX, int dirY) {
+	        line.direction(dirX, dirY);
+	        for (int i = -4; i < 1; i++) {
+	            line.clear();
+	            for (int j = 0; j < 5; j++) {
+	                int y2 = y + dirY * (i + j);
+	                int x2 = x + dirX * (i + j);
+	                if ((pointsState[x2][y2] == 1 && !(points[x2][y2].isLocked(dirX, dirY))) || (pointsState[x2][y2] == 0 && x2==x && y2==y)) {
 
+	                	line.addPoint(new Point(x2*this.square+this.square/2-5,y2*this.square+this.square/2-5));
+	                }
+	                else {
+	                    break;
+	                }
+	            }
+	            
+	            if (line.lineSize() == 5) {
+	                return true;
+	            }
+	        }
+	        return false;
+	   }
+	   
+	   public void addLine(Line line) {
+		   lines.add(line);
+		   
+		   // Updates directions for every points of the line
+		   if(line.getDirection().equals("RISE")) {
+				for(int i = 0; i<line.lineSize(); i++) {
+					int x = (line.getPoint(i).getX() -this.square/2 +5 )/ this.square ;
+					int y = (line.getPoint(i).getY() -this.square/2 +5 )/ this.square;
+					if(i!=4) points[x][y].lockDirection("UPRIGHT");
+					if(i!=0) points[x][y].lockDirection("DOWNLEFT");
+				}
+		   }
+		   if(line.getDirection().equals("FALL")) {
+				for(int i = 0; i<line.lineSize(); i++) {
+					int x = (line.getPoint(i).getX() -this.square/2 +5 )/ this.square;
+					int y = (line.getPoint(i).getY() -this.square/2 +5 )/ this.square;
+					if(i!=4) points[x][y].lockDirection("UPLEFT");
+					if(i!=0) points[x][y].lockDirection("DOWRIGHT");
+				}
+		   }
+			if(line.getDirection().equals("VERTI")) {
+				for(int i = 0; i<line.lineSize(); i++) {
+					int x = (line.getPoint(i).getX() -this.square/2 +5 )/ this.square;
+					int y = (line.getPoint(i).getY() -this.square/2 +5 )/ this.square;
+					if(i!=4) points[x][y].lockDirection("UP");
+					if(i!=0) points[x][y].lockDirection("DOWN");
+				}
+			}
+			if(line.getDirection().equals("HORI")) {
+				for(int i = 0; i<line.lineSize(); i++) {
+					int x = (line.getPoint(i).getX() -this.square/2 +5 )/ this.square;
+					int y = (line.getPoint(i).getY() -this.square/2 +5 )/ this.square;
+					if(i!=4) points[x][y].lockDirection("RIGHT");
+					if(i!=0) points[x][y].lockDirection("LEFT");
+				}
+			}
+				
+	   }
+	   
 }

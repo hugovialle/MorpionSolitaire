@@ -1,4 +1,4 @@
-package projetJava;
+package projetJavaTESTLINES;
 import java.awt.BorderLayout;
 
 import javax.swing.JFrame;
