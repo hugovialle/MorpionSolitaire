@@ -1,7 +1,10 @@
 package projetJava;
+import java.awt.BasicStroke;
 import java.awt.Color;
 
 import java.awt.Font;
+import java.awt.Graphics2D;
+
 import java.awt.Graphics;
 import java.util.ArrayList;
 
@@ -24,18 +27,29 @@ public class MovePoint extends Point {
 	
 	public void draw(Graphics g) {
 		
-		g.setColor(Color.black);
-		g.fillOval(this.getX()-(POINT_SIZE/2), this.getY()-(POINT_SIZE/2), POINT_SIZE+2, POINT_SIZE+2);
-		g.setColor(Color.white);
-		g.fillOval(this.getX()-(POINT_SIZE/2)+1, this.getY()-(POINT_SIZE/2)+1, POINT_SIZE, POINT_SIZE);
-		g.setColor(Color.black);
-		g.setFont(new Font("SansSerif", Font.CENTER_BASELINE, 8));
-		g.drawString(String.valueOf(number), this.getX()-5, this.getY()+5);
-		
-		
-		
 		//dessine la ligne des 5 points
-		g.drawLine(line.get(0).getX(), line.get(0).getY(), line.get(4).getX(), line.get(4).getY());
+        ((Graphics2D) g).setStroke(new BasicStroke(3));
+        g.setColor(Color.red);
+		g.drawLine(line.get(0).getX()+4, line.get(0).getY()+4, line.get(4).getX()+4, line.get(4).getY()+4);
+		
+		g.setColor(Color.black);
+		g.fillOval(this.getX()-(POINT_SIZE/4), this.getY()-(POINT_SIZE/4), POINT_SIZE+2, POINT_SIZE+2);
+		g.setColor(Color.white);
+		g.fillOval(this.getX()-(POINT_SIZE/4)+1, this.getY()-(POINT_SIZE/4)+1, POINT_SIZE, POINT_SIZE);
+		g.setColor(Color.red);
+		if(number<=9) {
+			g.setFont(new Font("SansSerif", Font.CENTER_BASELINE, 12));
+			g.drawString(String.valueOf(number), this.getX()+1, this.getY()+9);
+		}
+		else if(number<=99){
+			g.setFont(new Font("SansSerif", Font.CENTER_BASELINE, 9));
+			g.drawString(String.valueOf(number), this.getX()-1, this.getY()+9);
+		}
+		else {
+			g.setFont(new Font("SansSerif", Font.CENTER_BASELINE, 7));
+			g.drawString(String.valueOf(number), this.getX()-2, this.getY()+9);
+		}
+		
 		lockDirections();
 		
 		

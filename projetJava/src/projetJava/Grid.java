@@ -85,31 +85,31 @@ public class Grid {
 	   }
 	   
 	   public void move(int x, int y) {
-		   // coordonées par rapport aux lignes/colonnes (de 0,0 à 30,30)
+		   // coordonees par rapport aux lignes/colonnes (de 0,0 a 30,30)
 		   int xRound = Math.round(x / this.square); 
 	       int yRound = Math.round(y / this.square);
 		   if (pointsState[xRound][yRound] == 0) {
-			   // coordonées exactes de la fenetre (de 0,0 à 900,900)
+			   // coordonees exactes de la fenetre (de 0,0 a 900,900)
 			   int xPoint = xRound*this.square+this.square/2-5;
 		       int yPoint = yRound*this.square+this.square/2-5;
 		       //System.out.println("Point arrondi : " + xRound+","+yRound);
-		       //System.out.println("Point (coordonées Jframe) : " + xPoint+","+yPoint);
+		       //System.out.println("Point (coordonï¿½es Jframe) : " + xPoint+","+yPoint);
 		       ArrayList<Point> lineToDraw = new ArrayList<Point>();
-		     if (isPossibleLine(xRound,yRound, lineToDraw)) {
-		    	Point p = new Point(xPoint,yPoint);
-		    	if(p.lineValidation(lineToDraw)) {
-		    		MovePoint pp = new MovePoint(xPoint,yPoint,lineToDraw,score+1);
-					   points[xRound][yRound]=pp;
-					   pointsState[xRound][yRound]=1;
-					   this.score++;
+		       if (isPossibleLine(xRound,yRound, lineToDraw)) {
+		    	   Point p = new Point(xPoint,yPoint);
+		    	   if(p.lineValidation(lineToDraw)) {
+		    		   MovePoint pp = new MovePoint(xPoint,yPoint,lineToDraw,score+1);
+		    		   points[xRound][yRound]=pp;
+		    		   pointsState[xRound][yRound]=1;
+		    		   this.score++;
 		    	}
 		     }
 		   }
   
 	   }
 	   
-	// Un point peut faire parti d'une ligne si et seulement si ce point n'a pas cette direction de ligne occupée
-	   // Exemple : on veut faire une ligne horizontale : il faut check si le point n'est pas "occupé" horizontalement 
+	// Un point peut faire parti d'une ligne si et seulement si ce point n'a pas cette direction de ligne occupï¿½e
+	   // Exemple : on veut faire une ligne horizontale : il faut check si le point n'est pas "occupï¿½" horizontalement 
 	   // un point a 8 occupations possibles : haut, bas, gauche, droite, diag HG, diag HD, diag BG, diag BD
 	   private boolean isPossibleLine(int x, int y, ArrayList<Point> line) {
 		   if (checkHVLines(x,y,line,1,0) || 
@@ -123,7 +123,7 @@ public class Grid {
 	  
 	   
 	   private boolean checkHVLines(int x, int y, ArrayList<Point> line,int dirX, int dirY) {
-		// ajout du point cliqué dans la ligne
+		// ajout du point cliquï¿½ dans la ligne
 		   line.add(points[x][y]);
 		   int cmpX=dirX;
 		   int cmpY=dirY;
@@ -154,39 +154,39 @@ public class Grid {
 	   }
 	   
 	   private boolean checkDiagLines(int x, int y, ArrayList<Point> line) {
-		   int incrément = 1;
+		   int increment = 1;
 		   line.add(points[x][y]);
 		
 		// VERIF DIAGONAL UPLEFT<-->DOWNRIGHT
-		   while (pointsState[x+incrément][y+incrément]==1) {
+		   while (pointsState[x+increment][y+increment]==1) {
 			   if (line.size()==5) break;
-			   line.add(points[x+incrément][y+incrément]);
-			   incrément++;
+			   line.add(points[x+increment][y+increment]);
+			   increment++;
 		   }
 		   if (line.size()==5)  return true; 
-		   incrément = 1;
-		   while (pointsState[x-incrément][y-incrément]==1) {
+		   increment = 1;
+		   while (pointsState[x-increment][y-increment]==1) {
 			   if (line.size()==5) break;
-			   line.add(points[x-incrément][y-incrément]);
-			   incrément++;
+			   line.add(points[x-increment][y-increment]);
+			   increment++;
 		   }
 		   if (line.size()==5) return true;  
-		   else incrément = 1;
+		   else increment = 1;
 		   line.clear();
 		   
 		   line.add(points[x][y]);
 		  // VERIF DIAGONAL DOWNLEFT<-->UPRIGHT
-		   while (pointsState[x-incrément][y+incrément]==1) {
+		   while (pointsState[x-increment][y+increment]==1) {
 			   if (line.size()==5) break;
-			   line.add(points[x-incrément][y+incrément]);
-			   incrément++;
+			   line.add(points[x-increment][y+increment]);
+			   increment++;
 		   }
 		   if (line.size()==5)  return true; 
-		    incrément = 1;
-		   while (pointsState[x+incrément][y-incrément]==1) {
+		    increment = 1;
+		   while (pointsState[x+increment][y-increment]==1) {
 			   if (line.size()==5) break;
-			   line.add(points[x+incrément][y-incrément]);
-			   incrément++;
+			   line.add(points[x+increment][y-increment]);
+			   increment++;
 		   }
 		   if (line.size()==5)  return true; 
 		   line.clear();	   	   

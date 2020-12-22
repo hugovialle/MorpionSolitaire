@@ -19,12 +19,11 @@ public class Point {
     }
 
 
-
 	public int getX() {
         return x;
     }
 
-   
+ 
     public int getY() {
         return y;
     }
@@ -86,7 +85,7 @@ public class Point {
 		return true;
 	}
     
- // Implémentation d'une comparaison entre points
+ // Implï¿½mentation d'une comparaison entre points
  	// Source : https://stackoverflow.com/questions/3077746/how-to-sort-an-array-of-objectspoints-in-java 
  	class PointSort implements Comparator<Point>{
  		@Override
