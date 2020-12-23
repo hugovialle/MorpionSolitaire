@@ -103,15 +103,7 @@ public class Grid {
 				   }	   
 			   }
 		   }
-//		   System.out.println("SIZE OF : "+possibleLines.size()+"  END ? "+checkGameOver);
-//		   System.out.println("UP : "+points[17][17].isLocked("UP"));
-//		   System.out.println("DOWN : "+points[17][17].isLocked("DOWN"));
-//		   System.out.println("DOWNLEFT : "+points[17][17].isLocked("DOWNLEFT"));
-//		   System.out.println("DOWNRIGHT : "+points[17][17].isLocked("DOWNRIGHT"));
-//		   System.out.println("LEFT : "+points[17][17].isLocked("LEFT"));
-//		   System.out.println("RIGHT : "+points[17][17].isLocked("RIGHT"));
-//		   System.out.println("UPLEFT : "+points[17][17].isLocked("UPLEFT"));
-//		   System.out.println("UPRIGHT : "+points[17][17].isLocked("UPRIGHT"));
+
 		   if (possibleLines.size() > 1 && !checkGameOver) {
 			  System.out.println("ORDRE 1");
 			   for(Line l : possibleLines) {
@@ -175,42 +167,20 @@ public class Grid {
 	       }
 	   }
 	   
+
 	   private boolean isPossibleLine(int x, int y) {
 		   Line line = new Line();
-		   int k=0;
-//		   if (checkLine(x,y,line,1,0) ||
-//			   checkLine(x,y,line,0,1) ||
-//			   checkLine(x,y,line,1,1) ||
-//			   checkLine(x,y,line,1,-1)
-//			   ) {
-//			   if (!checkGameOver) {
-//				   System.out.println("TAILLE : "+ possibleLines.size());
-//			   }
-//			   
-//			   return true; 
-//		   }
-		   if(checkLine(x,y,line,1,0)) k++;
-		   if(checkLine(x,y,line,0,1)) k++;
-		   if(checkLine(x,y,line,1,1)) k++;
-		   if(checkLine(x,y,line,1,-1)) k++;
-		   if(k>0) return true;
+		   boolean horizontal = checkLine(x,y,line,1,0);
+		   boolean vertical = checkLine(x,y,line,0,1);
+		   boolean diag1 = checkLine(x,y,line,1,1);
+		   boolean diag2 = checkLine(x,y,line,1,-1);
+		   if (horizontal ||vertical ||diag1 || diag2) {
+			   return true; 
+		   }
 			   
 		return false;
 	   }
 	   
-//	   private boolean isPossibleLine(int x, int y) {
-//		   Line line = new Line();
-//		   boolean horizontal = checkLine(x,y,line,1,0);
-//		   boolean vertical = checkLine(x,y,line,0,1);
-//		   boolean diag1 = checkLine(x,y,line,1,1);
-//		   boolean diag2 = checkLine(x,y,line,1,-1);
-//		   if (horizontal ||vertical ||diag1 || diag2) {
-//			   return true; 
-//		   }
-//			   
-//		return false;
-//	   }
-//	   
 	   private boolean checkLine(int x, int y, Line line,int dirX, int dirY) {
 	        line.direction(dirX, dirY);
 	        for (int i = -4; i < 1; i++) {
@@ -234,7 +204,6 @@ public class Grid {
 	            	Line l = new Line();
 	            	l = line.copy();
 	            	possibleLines.add(l);
-	            	 //System.out.println("TAILLE DE POSSIBLELINES : " +possibleLines.size());
 	            	
 	            }
 	            else if(line.lineSize() == 5 && checkGameOver) {
@@ -243,7 +212,6 @@ public class Grid {
 	            
 
 	        }
-	        System.out.println("TAILLE DE POSSIBLELINES in check : " +possibleLines.size());
 	        if (possibleLines.size() >= 1 ) {
             	return true;
             }  
@@ -284,15 +252,7 @@ public class Grid {
 			   points[x][y].printDirections();
 
 		   }
-//			 System.out.println("SIZE OF : "+possibleLines.size()+"  END ? "+checkGameOver);
-//			 System.out.println("UP : "+points[18][16].isLocked("UP"));
-//			 System.out.println("DOWN : "+points[18][16].isLocked("DOWN"));
-//			 System.out.println("DOWNLEFT : "+points[18][16].isLocked("DOWNLEFT"));
-//			 System.out.println("DOWNRIGHT : "+points[18][16].isLocked("DOWNRIGHT"));
-//			 System.out.println("LEFT : "+points[18][16].isLocked("LEFT"));
-//			 System.out.println("RIGHT : "+points[18][16].isLocked("RIGHT"));
-//			 System.out.println("UPLEFT : "+points[18][16].isLocked("UPLEFT"));
-//			 System.out.println("UPRIGHT : "+points[18][16].isLocked("UPRIGHT"));	
+
 	   }
 	   
 	   public List<Point> possibleMoves() {
