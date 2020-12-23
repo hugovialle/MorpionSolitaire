@@ -1,4 +1,5 @@
-package projetJavaTESTLINES;
+package projetJava;
+
 
 import java.awt.Graphics;
 import java.util.ArrayList;
@@ -7,10 +8,11 @@ public class Line{
 
 	private ArrayList<Point> line;
 	private String direction;
+	private Point indexclickedPoint;
 	
 	public Line() {
 		this.line = new ArrayList<Point>();
-		
+		this.indexclickedPoint = null;
 	}
 	
 	public String getDirection() {
@@ -20,6 +22,7 @@ public class Line{
 	public void addPoint(Point p) {
 		line.add(p);
 	}
+	
 	
 	public int lineSize() {
 		return line.size();
@@ -51,6 +54,26 @@ public class Line{
 	public void draw(Graphics g) {
 		g.drawLine(line.get(0).getX()+4, line.get(0).getY()+4, line.get(4).getX()+4, line.get(4).getY()+4);
 	}
+	
+	public Line copy() {
+		Line l = new Line();
+		l.line = new ArrayList<Point>(this.line);
+		l.direction = this.direction;
+		l.indexclickedPoint = this.indexclickedPoint;
+		return l;
+	}
+
+	public void setIndexclickedPoint(Point indexclickedPoint) {
+		this.indexclickedPoint = indexclickedPoint;
+	}
+	
+	public Point getIndexclickedPoint() {
+		return indexclickedPoint;
+	}
+
+	
+
+	
 	
 //	public void lockPointsDirections() {
 //		switch(this.direction) {

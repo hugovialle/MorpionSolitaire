@@ -1,9 +1,11 @@
-package projetJavaTESTLINES;
+package projetJava;
+
 import java.awt.BorderLayout;
+
 
 import javax.swing.JFrame;
 
-import projetJavaTESTLINES.MorpionSolitaire.typeGame;
+import projetJava.MorpionSolitaire.typeGame;
 
 public class Launcher {
 	
@@ -11,7 +13,7 @@ public class Launcher {
         JFrame frame = new JFrame();
         frame.setLayout(new BorderLayout());
         MorpionSolitaire panel = new MorpionSolitaire(typeGame.FIVET);
-        OptionPanel option = new OptionPanel();
+        //OptionPanel option = new OptionPanel();
         frame.add(panel,BorderLayout.CENTER);
         frame.setTitle("Morpion solitaire");
         frame.pack();

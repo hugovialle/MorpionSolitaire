@@ -1,4 +1,5 @@
-package projetJavaTESTLINES;
+package projetJava;
+
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -15,7 +16,9 @@ public class Grid {
 	 Point[][] points; //tous les emplacements de points sur la grille
 	 int[][] pointsState; // point existant = 1 ; sinon 0
 	 ArrayList<Line> lines;
-
+	 ArrayList<Line> possibleLines;
+	 boolean checkGameOver;
+	 boolean isRedraw;
 	   
 	   public Grid(int square, int wid, int hei) {
 		   this.width = wid;
@@ -25,11 +28,14 @@ public class Grid {
 		   this.points = new Point[this.width/square][this.height/square];
 		   this.pointsState = new int[this.width/square][this.height/square];
 		   this.lines = new ArrayList<Line>();
+		   this.possibleLines = new ArrayList <Line>();
 		   // We define the clickable zone to check the possibleMoves every turn
 		   this.minX=9;
 		   this.maxX=20;	 
 		   this.minY=7;
 		   this.maxY=18;
+		   this.checkGameOver = false;
+		   this.isRedraw = false;
 		   
 		   //define the state of starting cross points
 		   for(int i = 0; i<this.width/this.square; i++) {
@@ -94,9 +100,18 @@ public class Grid {
 						   g2d.setColor(Color.black);
 						   g2d.fillOval((int)points[i][j].getX(), (int)points[i][j].getY(), 9, 9); // mettre des noms aux 2 dernieres variables
 					   }
-					   
 				   }	   
 			   }
+		   }
+		  
+		   if (possibleLines.size() > 1 && !checkGameOver) {
+			  System.out.println("ORDRE 1");
+			   for(Line l : possibleLines) {
+				   g2d.setColor(Color.yellow);
+				   g2d.fillOval(l.getPoint(4).getX(), l.getPoint(4).getY(), 9, 9);
+				   
+			   }
+			   isRedraw = true;
 		   }
 	   }
 	   
@@ -106,33 +121,67 @@ public class Grid {
 	       int yRound = Math.round(y / this.square);
 	       if(possibleMoves().size()==0) System.out.println("GAME OVER : Score : "+score);
 	       if((maxX>=xRound) && (minX<=xRound) && (maxY>=yRound) && (minY<=yRound)) {
-	    	   if (pointsState[xRound][yRound] == 0) {
+		   if (pointsState[xRound][yRound] == 0 || possibleLines.size() > 1) {
 			   // coordonees exactes de la fenetre (de 0,0 a 900,900)
-				   int xPoint = xRound*this.square+this.square/2-5;
-			       int yPoint = yRound*this.square+this.square/2-5;
-	
-			       Line lineToDraw = new Line();
-			       if (isPossibleLine(xRound,yRound, lineToDraw)) {
-			    	   addLine(lineToDraw);
-			    	   MovePoint mp = new MovePoint(xPoint,yPoint,lineToDraw,score+1);
+			   int xPoint = xRound*this.square+this.square/2-5;
+		       int yPoint = yRound*this.square+this.square/2-5;
+
+		       
+		       if (isPossibleLine(xRound,yRound) && !checkGameOver) {
+		    	   
+		    	   if (possibleLines.size() == 1) { // if one line only is possible
+		    		   
+		    		   addLine(possibleLines.get(0));
+			    	   MovePoint mp = new MovePoint(xPoint,yPoint,possibleLines.get(0),score+1);
 			    	   points[xRound][yRound]=mp;
 			    	   pointsState[xRound][yRound]=1;
 			    	   this.score++;
-	
-			       }
-	    	   }
+			    	   possibleLines.clear(); 
+		    	   }
+		    	   else if (possibleLines.size() > 1) { // if more than one line is possible 
+		    		   System.out.println("TEST");
+		    		  for (Line l : possibleLines) {
+		    			  int xClicked = l.getIndexclickedPoint().getX();
+	    				  int yClicked = l.getIndexclickedPoint().getY();
+		    			  if (xPoint == l.getPoint(4).getX() && yPoint == l.getPoint(4).getY() && isRedraw) { // PROBLEME
+		    				  addLine(l);
+		    				  
+		    				  MovePoint mp = new MovePoint(xClicked,yClicked,l,score+1);
+		    				  int xRoundClicked = Math.round(xClicked / this.square); 
+		    			      int yRoundClicked = Math.round(yClicked / this.square);
+					    	  points[xRoundClicked][yRoundClicked]=mp;
+					    	  pointsState[xRoundClicked][yRoundClicked]=1;
+					    	  this.score++;
+					    	  possibleLines.clear(); 
+					    	  break;
+		    			  }
+		    		  }
+		    		 
+		    		  
+		    	   }
+		    	   
+		    	   
+		    	  
+
+		     }
+		   }
 	       }
-		   
-  
 	   }
 	   
-	   private boolean isPossibleLine(int x, int y, Line line) {
-		   if (checkLine(x,y,line,1,0) || 
+	   private boolean isPossibleLine(int x, int y) {
+		   Line line = new Line();
+		   if (checkLine(x,y,line,1,0) ||
 			   checkLine(x,y,line,0,1) ||
 			   checkLine(x,y,line,1,1) ||
 			   checkLine(x,y,line,1,-1)
-			   ) 
+			   ) {
+			   if (!checkGameOver) {
+				   System.out.println("TAILLE : "+ possibleLines.size());
+			   }
+			   
 			   return true; 
+		   }
+			   
 		return false;
 	   }
 	   
@@ -143,19 +192,35 @@ public class Grid {
 	            for (int j = 0; j < 5; j++) {
 	                int y2 = y + dirY * (i + j);
 	                int x2 = x + dirX * (i + j);
-	                if ((pointsState[x2][y2] == 1 && !(points[x2][y2].isLocked(dirX, dirY))) || (pointsState[x2][y2] == 0 && x2==x && y2==y)) {
-
+	                if ((pointsState[x2][y2] == 1 && !(points[x2][y2].isLocked(dirX, dirY))) || 
+	                		(pointsState[x2][y2] == 0 && x2==x && y2==y)) {
 	                	line.addPoint(new Point(x2*this.square+this.square/2-5,y2*this.square+this.square/2-5));
+	                	if (x2 == x && y2 ==y && !checkGameOver) {
+	                		line.setIndexclickedPoint(new Point(x2*this.square+this.square/2-5,y2*this.square+this.square/2-5));
+	                	}
 	                }
-	                else {
+	                else {            	
 	                    break;
 	                }
+	            }  
+	            
+	            if (line.lineSize() == 5 && !checkGameOver) {
+	            	Line l = new Line();
+	            	l = line.copy();
+	            	possibleLines.add(l);
+	            	 System.out.println("TAILLE DE POSSIBLELINES : " +possibleLines.size());
+	            	
+	            }
+	            else if(line.lineSize() == 5 && checkGameOver) {
+	            	return true;
 	            }
 	            
-	            if (line.lineSize() == 5) {
-	                return true;
-	            }
+
 	        }
+	       
+	        if (possibleLines.size() >= 1 ) {
+            	return true;
+            }  
 	        return false;
 	   }
 	   
@@ -191,16 +256,16 @@ public class Grid {
 	   }
 	   
 	   public List<Point> possibleMoves() {
+		   checkGameOver = true;
 		   List<Point> possibleMoves = new ArrayList<Point>();
 		   for(int i = minX; i<=maxX; i++) {
 			   for(int j = minY; j<= maxY; j++) {
-				   Line line = new Line();
-				   if(isPossibleLine(i,j,line)) {
+				   if(isPossibleLine(i,j)) {
 					   possibleMoves.add(points[i][j]);
 				   }
 			   }
 		   }
-
+		   checkGameOver = false;
 		   return possibleMoves;
 	   }
 	   

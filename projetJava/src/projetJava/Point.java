@@ -1,4 +1,4 @@
-package projetJavaTESTLINES;
+package projetJava;
 
 import java.util.Comparator;
 import java.util.HashMap;

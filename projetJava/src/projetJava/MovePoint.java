@@ -1,4 +1,5 @@
-package projetJavaTESTLINES;
+package projetJava;
+
 
 import java.awt.Color;
 
