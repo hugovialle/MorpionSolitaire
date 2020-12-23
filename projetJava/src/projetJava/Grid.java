@@ -103,7 +103,15 @@ public class Grid {
 				   }	   
 			   }
 		   }
-		  
+//		   System.out.println("SIZE OF : "+possibleLines.size()+"  END ? "+checkGameOver);
+//		   System.out.println("UP : "+points[17][17].isLocked("UP"));
+//		   System.out.println("DOWN : "+points[17][17].isLocked("DOWN"));
+//		   System.out.println("DOWNLEFT : "+points[17][17].isLocked("DOWNLEFT"));
+//		   System.out.println("DOWNRIGHT : "+points[17][17].isLocked("DOWNRIGHT"));
+//		   System.out.println("LEFT : "+points[17][17].isLocked("LEFT"));
+//		   System.out.println("RIGHT : "+points[17][17].isLocked("RIGHT"));
+//		   System.out.println("UPLEFT : "+points[17][17].isLocked("UPLEFT"));
+//		   System.out.println("UPRIGHT : "+points[17][17].isLocked("UPRIGHT"));
 		   if (possibleLines.size() > 1 && !checkGameOver) {
 			  System.out.println("ORDRE 1");
 			   for(Line l : possibleLines) {
@@ -121,70 +129,88 @@ public class Grid {
 	       int yRound = Math.round(y / this.square);
 	       if(possibleMoves().size()==0) System.out.println("GAME OVER : Score : "+score);
 	       if((maxX>=xRound) && (minX<=xRound) && (maxY>=yRound) && (minY<=yRound)) {
-		   if (pointsState[xRound][yRound] == 0 || possibleLines.size() > 1) {
-			   // coordonees exactes de la fenetre (de 0,0 a 900,900)
-			   int xPoint = xRound*this.square+this.square/2-5;
-		       int yPoint = yRound*this.square+this.square/2-5;
-
-		       
-		       if (isPossibleLine(xRound,yRound) && !checkGameOver) {
-		    	   
-		    	   if (possibleLines.size() == 1) { // if one line only is possible
-		    		   
-		    		   addLine(possibleLines.get(0));
-			    	   MovePoint mp = new MovePoint(xPoint,yPoint,possibleLines.get(0),score+1);
-			    	   points[xRound][yRound]=mp;
-			    	   pointsState[xRound][yRound]=1;
-			    	   this.score++;
-			    	   possibleLines.clear(); 
-		    	   }
-		    	   else if (possibleLines.size() > 1) { // if more than one line is possible 
-		    		   System.out.println("TEST");
-		    		  for (Line l : possibleLines) {
-		    			  int xClicked = l.getIndexclickedPoint().getX();
-	    				  int yClicked = l.getIndexclickedPoint().getY();
-		    			  if (xPoint == l.getPoint(4).getX() && yPoint == l.getPoint(4).getY() && isRedraw) { // PROBLEME
-		    				  addLine(l);
-		    				  
-		    				  MovePoint mp = new MovePoint(xClicked,yClicked,l,score+1);
-		    				  int xRoundClicked = Math.round(xClicked / this.square); 
-		    			      int yRoundClicked = Math.round(yClicked / this.square);
-					    	  points[xRoundClicked][yRoundClicked]=mp;
-					    	  pointsState[xRoundClicked][yRoundClicked]=1;
-					    	  this.score++;
-					    	  possibleLines.clear(); 
-					    	  break;
-		    			  }
-		    		  }
-		    		 
-		    		  
-		    	   }
-		    	   
-		    	   
-		    	  
-
-		     }
-		   }
+			   if (pointsState[xRound][yRound] == 0 || possibleLines.size() > 1) {
+				   // coordonees exactes de la fenetre (de 0,0 a 900,900)
+				   int xPoint = xRound*this.square+this.square/2-5;
+			       int yPoint = yRound*this.square+this.square/2-5;
+			       System.out.println("X : "+xRound+""+yRound);
+			       if (isPossibleLine(xRound,yRound) && !checkGameOver) {
+			    	   
+			    	   if (possibleLines.size() == 1) { // if one line only is possible
+			    		   
+			    		   
+				    	   MovePoint mp = new MovePoint(xPoint,yPoint,possibleLines.get(0),score+1);
+				    	   points[xRound][yRound]=mp;
+				    	   pointsState[xRound][yRound]=1;
+				    	   addLine(possibleLines.get(0));
+				    	   this.score++;
+				    	   possibleLines.clear(); 
+			    	   }
+			    	   else if (possibleLines.size() > 1) { // if more than one line is possible 
+			    		  for (Line l : possibleLines) {
+			    			  int xClicked = l.getIndexclickedPoint().getX();
+		    				  int yClicked = l.getIndexclickedPoint().getY();
+			    			  if (xPoint == l.getPoint(4).getX() && yPoint == l.getPoint(4).getY() && isRedraw) { // PROBLEME
+			    				  addLine(l);
+			    				  
+			    				  MovePoint mp = new MovePoint(xClicked,yClicked,l,score+1);
+			    				  int xRoundClicked = Math.round(xClicked / this.square); 
+			    			      int yRoundClicked = Math.round(yClicked / this.square);
+						    	  points[xRoundClicked][yRoundClicked]=mp;
+						    	  pointsState[xRoundClicked][yRoundClicked]=1;
+						    	  this.score++;
+						    	  possibleLines.clear(); 
+						    	  break;
+			    			  }
+			    		  }
+			    		 
+			    		  
+			    	   }
+			    	   
+			    	   
+			    	  
+	
+			     }
+			   }
 	       }
 	   }
 	   
 	   private boolean isPossibleLine(int x, int y) {
 		   Line line = new Line();
-		   if (checkLine(x,y,line,1,0) ||
-			   checkLine(x,y,line,0,1) ||
-			   checkLine(x,y,line,1,1) ||
-			   checkLine(x,y,line,1,-1)
-			   ) {
-			   if (!checkGameOver) {
-				   System.out.println("TAILLE : "+ possibleLines.size());
-			   }
-			   
-			   return true; 
-		   }
+		   int k=0;
+//		   if (checkLine(x,y,line,1,0) ||
+//			   checkLine(x,y,line,0,1) ||
+//			   checkLine(x,y,line,1,1) ||
+//			   checkLine(x,y,line,1,-1)
+//			   ) {
+//			   if (!checkGameOver) {
+//				   System.out.println("TAILLE : "+ possibleLines.size());
+//			   }
+//			   
+//			   return true; 
+//		   }
+		   if(checkLine(x,y,line,1,0)) k++;
+		   if(checkLine(x,y,line,0,1)) k++;
+		   if(checkLine(x,y,line,1,1)) k++;
+		   if(checkLine(x,y,line,1,-1)) k++;
+		   if(k>0) return true;
 			   
 		return false;
 	   }
 	   
+//	   private boolean isPossibleLine(int x, int y) {
+//		   Line line = new Line();
+//		   boolean horizontal = checkLine(x,y,line,1,0);
+//		   boolean vertical = checkLine(x,y,line,0,1);
+//		   boolean diag1 = checkLine(x,y,line,1,1);
+//		   boolean diag2 = checkLine(x,y,line,1,-1);
+//		   if (horizontal ||vertical ||diag1 || diag2) {
+//			   return true; 
+//		   }
+//			   
+//		return false;
+//	   }
+//	   
 	   private boolean checkLine(int x, int y, Line line,int dirX, int dirY) {
 	        line.direction(dirX, dirY);
 	        for (int i = -4; i < 1; i++) {
@@ -208,7 +234,7 @@ public class Grid {
 	            	Line l = new Line();
 	            	l = line.copy();
 	            	possibleLines.add(l);
-	            	 System.out.println("TAILLE DE POSSIBLELINES : " +possibleLines.size());
+	            	 //System.out.println("TAILLE DE POSSIBLELINES : " +possibleLines.size());
 	            	
 	            }
 	            else if(line.lineSize() == 5 && checkGameOver) {
@@ -217,7 +243,7 @@ public class Grid {
 	            
 
 	        }
-	       
+	        System.out.println("TAILLE DE POSSIBLELINES in check : " +possibleLines.size());
 	        if (possibleLines.size() >= 1 ) {
             	return true;
             }  
@@ -229,6 +255,8 @@ public class Grid {
 		   for(int i = 0; i<line.lineSize(); i++) {
 			   int x = (line.getPoint(i).getX() -this.square/2 +5 )/ this.square;
 			   int y = (line.getPoint(i).getY() -this.square/2 +5 )/ this.square;
+			   System.out.println(i+": "+x+","+y);
+			   System.out.println(line.getDirection());
 			   switch(line.getDirection()) {
 				   case "RISE":
 					   if(i!=4) points[x][y].lockDirection("UPRIGHT");
@@ -236,23 +264,35 @@ public class Grid {
 					   break;
 				   case "FALL":
 					   if(i!=4) points[x][y].lockDirection("UPLEFT");
-					   if(i!=0) points[x][y].lockDirection("DOWRIGHT");
+					   if(i!=0) points[x][y].lockDirection("DOWNRIGHT");
+					   
 					   break;
 				   case "VERTI":
-					   if(i!=4) points[x][y].lockDirection("UP");
-					   if(i!=0) points[x][y].lockDirection("DOWN");
+					   if(i!=4) points[x][y].lockDirection("DOWN");
+					   if(i!=0) points[x][y].lockDirection("UP");
 					   break;
 				   case "HORI":
 					   if(i!=4) points[x][y].lockDirection("RIGHT");
 					   if(i!=0) points[x][y].lockDirection("LEFT");
 					   break;
 			   }
+			  
 			   minX=Math.min(minX, x-1);
 			   minY=Math.min(minY, y-1);	
 			   maxX=Math.max(maxX, x+1);
-			   maxY=Math.max(maxY, y+1);	
+			   maxY=Math.max(maxY, y+1);
+			   points[x][y].printDirections();
+
 		   }
-				
+//			 System.out.println("SIZE OF : "+possibleLines.size()+"  END ? "+checkGameOver);
+//			 System.out.println("UP : "+points[18][16].isLocked("UP"));
+//			 System.out.println("DOWN : "+points[18][16].isLocked("DOWN"));
+//			 System.out.println("DOWNLEFT : "+points[18][16].isLocked("DOWNLEFT"));
+//			 System.out.println("DOWNRIGHT : "+points[18][16].isLocked("DOWNRIGHT"));
+//			 System.out.println("LEFT : "+points[18][16].isLocked("LEFT"));
+//			 System.out.println("RIGHT : "+points[18][16].isLocked("RIGHT"));
+//			 System.out.println("UPLEFT : "+points[18][16].isLocked("UPLEFT"));
+//			 System.out.println("UPRIGHT : "+points[18][16].isLocked("UPRIGHT"));	
 	   }
 	   
 	   public List<Point> possibleMoves() {

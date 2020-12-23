@@ -27,7 +27,7 @@ public class Point  {
     }
     
     public void lockDirection(String direction) {
-    	this.lockedDirections.put(direction, true);
+    	this.lockedDirections.replace(direction, true);
     }
     
     public boolean isLocked(String direction) {
@@ -62,6 +62,13 @@ public class Point  {
 		map.put("UPLEFT",false);
 	}
     
+    public void printDirections() {
+    	System.out.println(this.getX() + ","+this.getY() + " : ");
+    	for (String key : lockedDirections.keySet()) {
+    	    System.out.println(key +" " + lockedDirections.get(key));
+    	}
+    	System.out.println("-----------------");
+    }
     
  // Impl�mentation d'une comparaison entre points
  	// Source : https://stackoverflow.com/questions/3077746/how-to-sort-an-array-of-objectspoints-in-java 
