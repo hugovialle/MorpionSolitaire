@@ -4,12 +4,14 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class Grid {
 	
-	 int square, width, height;
-	 int score;
+	 int square, width, height, score;
+	 int maxX,minX;
+	 int maxY,minY;
 	 Point[][] points; //tous les emplacements de points sur la grille
 	 int[][] pointsState; // point existant = 1 ; sinon 0
 	 ArrayList<Line> lines;
@@ -23,6 +25,11 @@ public class Grid {
 		   this.points = new Point[this.width/square][this.height/square];
 		   this.pointsState = new int[this.width/square][this.height/square];
 		   this.lines = new ArrayList<Line>();
+		   // We define the clickable zone to check the possibleMoves every turn
+		   this.minX=9;
+		   this.maxX=20;	 
+		   this.minY=7;
+		   this.maxY=18;
 		   
 		   //define the state of starting cross points
 		   for(int i = 0; i<this.width/this.square; i++) {
@@ -97,21 +104,25 @@ public class Grid {
 		   // coordonees par rapport aux lignes/colonnes (de 0,0 a 30,30)
 		   int xRound = Math.round(x / this.square); 
 	       int yRound = Math.round(y / this.square);
-		   if (pointsState[xRound][yRound] == 0) {
+	       if(possibleMoves().size()==0) System.out.println("GAME OVER : Score : "+score);
+	       if((maxX>=xRound) && (minX<=xRound) && (maxY>=yRound) && (minY<=yRound)) {
+	    	   if (pointsState[xRound][yRound] == 0) {
 			   // coordonees exactes de la fenetre (de 0,0 a 900,900)
-			   int xPoint = xRound*this.square+this.square/2-5;
-		       int yPoint = yRound*this.square+this.square/2-5;
-
-		       Line lineToDraw = new Line();
-		       if (isPossibleLine(xRound,yRound, lineToDraw)) {
-		    	   addLine(lineToDraw);
-		    	   MovePoint mp = new MovePoint(xPoint,yPoint,lineToDraw,score+1);
-		    	   points[xRound][yRound]=mp;
-		    	   pointsState[xRound][yRound]=1;
-		    	   this.score++;
-
-		     }
-		   }
+				   int xPoint = xRound*this.square+this.square/2-5;
+			       int yPoint = yRound*this.square+this.square/2-5;
+	
+			       Line lineToDraw = new Line();
+			       if (isPossibleLine(xRound,yRound, lineToDraw)) {
+			    	   addLine(lineToDraw);
+			    	   MovePoint mp = new MovePoint(xPoint,yPoint,lineToDraw,score+1);
+			    	   points[xRound][yRound]=mp;
+			    	   pointsState[xRound][yRound]=1;
+			    	   this.score++;
+	
+			       }
+	    	   }
+	       }
+		   
   
 	   }
 	   
@@ -150,41 +161,47 @@ public class Grid {
 	   
 	   public void addLine(Line line) {
 		   lines.add(line);
-		   
-		   // Updates directions for every points of the line
-		   if(line.getDirection().equals("RISE")) {
-				for(int i = 0; i<line.lineSize(); i++) {
-					int x = (line.getPoint(i).getX() -this.square/2 +5 )/ this.square ;
-					int y = (line.getPoint(i).getY() -this.square/2 +5 )/ this.square;
-					if(i!=4) points[x][y].lockDirection("UPRIGHT");
-					if(i!=0) points[x][y].lockDirection("DOWNLEFT");
-				}
+		   for(int i = 0; i<line.lineSize(); i++) {
+			   int x = (line.getPoint(i).getX() -this.square/2 +5 )/ this.square;
+			   int y = (line.getPoint(i).getY() -this.square/2 +5 )/ this.square;
+			   switch(line.getDirection()) {
+				   case "RISE":
+					   if(i!=4) points[x][y].lockDirection("UPRIGHT");
+					   if(i!=0) points[x][y].lockDirection("DOWNLEFT");
+					   break;
+				   case "FALL":
+					   if(i!=4) points[x][y].lockDirection("UPLEFT");
+					   if(i!=0) points[x][y].lockDirection("DOWRIGHT");
+					   break;
+				   case "VERTI":
+					   if(i!=4) points[x][y].lockDirection("UP");
+					   if(i!=0) points[x][y].lockDirection("DOWN");
+					   break;
+				   case "HORI":
+					   if(i!=4) points[x][y].lockDirection("RIGHT");
+					   if(i!=0) points[x][y].lockDirection("LEFT");
+					   break;
+			   }
+			   minX=Math.min(minX, x-1);
+			   minY=Math.min(minY, y-1);	
+			   maxX=Math.max(maxX, x+1);
+			   maxY=Math.max(maxY, y+1);	
 		   }
-		   if(line.getDirection().equals("FALL")) {
-				for(int i = 0; i<line.lineSize(); i++) {
-					int x = (line.getPoint(i).getX() -this.square/2 +5 )/ this.square;
-					int y = (line.getPoint(i).getY() -this.square/2 +5 )/ this.square;
-					if(i!=4) points[x][y].lockDirection("UPLEFT");
-					if(i!=0) points[x][y].lockDirection("DOWRIGHT");
-				}
-		   }
-			if(line.getDirection().equals("VERTI")) {
-				for(int i = 0; i<line.lineSize(); i++) {
-					int x = (line.getPoint(i).getX() -this.square/2 +5 )/ this.square;
-					int y = (line.getPoint(i).getY() -this.square/2 +5 )/ this.square;
-					if(i!=4) points[x][y].lockDirection("UP");
-					if(i!=0) points[x][y].lockDirection("DOWN");
-				}
-			}
-			if(line.getDirection().equals("HORI")) {
-				for(int i = 0; i<line.lineSize(); i++) {
-					int x = (line.getPoint(i).getX() -this.square/2 +5 )/ this.square;
-					int y = (line.getPoint(i).getY() -this.square/2 +5 )/ this.square;
-					if(i!=4) points[x][y].lockDirection("RIGHT");
-					if(i!=0) points[x][y].lockDirection("LEFT");
-				}
-			}
 				
+	   }
+	   
+	   public List<Point> possibleMoves() {
+		   List<Point> possibleMoves = new ArrayList<Point>();
+		   for(int i = minX; i<=maxX; i++) {
+			   for(int j = minY; j<= maxY; j++) {
+				   Line line = new Line();
+				   if(isPossibleLine(i,j,line)) {
+					   possibleMoves.add(points[i][j]);
+				   }
+			   }
+		   }
+
+		   return possibleMoves;
 	   }
 	   
 }

@@ -16,8 +16,12 @@ public class MorpionSolitaire extends JPanel{
 
 	Grid grid;
 	int height, width;
+	typeGame currentType;
 	
-	public MorpionSolitaire() {
+	enum typeGame{
+		FIVET, FIVED }
+	
+	public MorpionSolitaire(typeGame type) {
 		setPreferredSize(new Dimension(900,900));
         setBackground(Color.white);
         this.grid = new Grid(30,900,900);
