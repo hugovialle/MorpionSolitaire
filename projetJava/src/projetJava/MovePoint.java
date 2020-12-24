@@ -14,12 +14,10 @@ public class MovePoint extends Point {
 
 	private int number;
 	final static int POINT_SIZE=15;
-	//private Line line;
 
-	public MovePoint(int x, int y, Line line, int number) {	
+	public MovePoint(int x, int y,  int number) {	
 		super(x,y);
 		this.number=number;
-		//this.line = line;
 		
 	}
 	

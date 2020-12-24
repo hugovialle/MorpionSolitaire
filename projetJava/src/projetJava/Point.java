@@ -16,7 +16,7 @@ public class Point  {
         setupDirections(lockedDirections);
     }
 
-
+  
 	public int getX() {
         return x;
     }
@@ -35,21 +35,27 @@ public class Point  {
     }
     
     public boolean isLocked(int x, int y) {
-    	if(x==1) {
-    		if(y==0) {
-    			return isLocked("LEFT") || isLocked("RIGHT");
-    		}
-    		else if(y==-1) {
-    			return isLocked("DOWNLEFT") || isLocked("UPRIGHT");
-    		}
-    		else {
-    			return isLocked("DOWNRIGHT") || isLocked("UPLEFT");
-    		}
-    	}
-    	else {
-    		return isLocked("UP") || isLocked("DOWN");
-    	}
+    	
+    		if(x==1) {
+        		if(y==0) {
+        			return (isLocked("LEFT") || isLocked("RIGHT"));
+        		}
+        		else if(y==-1) {
+        			return (isLocked("DOWNLEFT") || isLocked("UPRIGHT"));
+        		}
+        		else {
+        			return (isLocked("DOWNRIGHT") || isLocked("UPLEFT"));
+        		}
+        	}
+        	else {
+        		return (isLocked("UP") || isLocked("DOWN"));
+        	}
+    	
+    	
+    	
     }
+    
+    
     
     private void setupDirections(Map<String, Boolean> map) {
 		map.put("UP",false);
@@ -63,11 +69,13 @@ public class Point  {
 	}
     
     public void printDirections() {
-    	System.out.println(this.getX() + ","+this.getY() + " : ");
+    	System.out.print(this.getX() + ","+this.getY() + " : ");
     	for (String key : lockedDirections.keySet()) {
-    	    System.out.println(key +" " + lockedDirections.get(key));
+    	    if(lockedDirections.get(key)) {
+    	    	System.out.print(key + " , ");
+    	    }
     	}
-    	System.out.println("-----------------");
+    	System.out.println("");
     }
     
  // Impl�mentation d'une comparaison entre points
