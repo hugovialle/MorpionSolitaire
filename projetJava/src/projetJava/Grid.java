@@ -29,7 +29,6 @@ public class Grid {
 		this.square = square;
 		this.score=0;
 		this.points = new Point[this.width/square][this.height/square];
-		
 		this.pointsState = new int[this.width/square][this.height/square];
 		this.lines = new ArrayList<Line>();
 		this.possibleLines = new ArrayList <Line>();
@@ -40,7 +39,7 @@ public class Grid {
 		this.maxY=18;
 		this.checkGameOver = false;
 		this.isRedraw = false; // correct bugs on propositions lines where clicked point = line.getPoint(4)
-		this.mode = "FIVED";
+		this.mode = "FIVET";
 		
 		//define the state of starting cross points
 		for(int i = 0; i<this.width/this.square; i++) {
@@ -133,8 +132,8 @@ public class Grid {
 					System.out.println("-----------");
 					System.out.println("taille possibleLines : " + possibleLines.size());
 					if (possibleLines.size() == 1) { // if one line only is possible
-						
 						MovePoint mp = new MovePoint(xPoint,yPoint,score+1);
+						if (mode == "FIVED") mp.copyDirections(points[xRound][yRound]);
 						addLine(possibleLines.get(0));
 						points[xRound][yRound]=mp;
 						pointsState[xRound][yRound]=1;
@@ -145,14 +144,13 @@ public class Grid {
 						for (Line l : possibleLines) {
 							int xClicked = l.getIndexclickedPoint().getX();
 							int yClicked = l.getIndexclickedPoint().getY();
-							if (xPoint == l.getPoint(4).getX() && yPoint == l.getPoint(4).getY() && isRedraw) { 
-								
+							if (xPoint == l.getPoint(4).getX() && yPoint == l.getPoint(4).getY() && isRedraw) {
 								MovePoint mp = new MovePoint(xClicked,yClicked, score+1);
+								if (mode == "FIVED") mp.copyDirections(points[xRound][yRound]);
 								addLine(l);
 								int xRoundClicked = Math.round(xClicked / this.square); 
 								int yRoundClicked = Math.round(yClicked / this.square);
 								points[xRoundClicked][yRoundClicked]=mp;
-								
 								pointsState[xRoundClicked][yRoundClicked]=1;
 								this.score++;
 								possibleLines.clear(); 
@@ -161,6 +159,11 @@ public class Grid {
 							}
 						}
 					}
+					/*System.out.println(17 + ","+12+" : " + points[16][12].isLocked(1, 1));
+					System.out.println(14 + ","+15+" : " + points[15][12].isLocked(1, -1));
+					System.out.println(14 + ","+12+" : " + points[14][12].isLocked(1, 0)); 
+					System.out.println(13 + ","+12+" : " + points[13][12].isLocked(1, 0)); 
+					System.out.println(12 + ","+12+" : " + points[12][12].isLocked(1, 0)); */
 				}
 			}
 		}
@@ -172,6 +175,12 @@ public class Grid {
 		boolean vertical = checkLine(x,y,line,0,1);
 		boolean diag1 = checkLine(x,y,line,1,1);
 		boolean diag2 = checkLine(x,y,line,1,-1);
+		if (!checkGameOver) {
+		System.out.println ("hori " + horizontal);
+		System.out.println ("verti " + vertical);
+		System.out.println ("diag1 " + diag1);
+		System.out.println ("diag2 " + diag2);
+		}
 		if (horizontal ||vertical ||diag1 || diag2) {
 			return true; 
 		}
@@ -181,6 +190,8 @@ public class Grid {
 
 	private boolean checkLine(int x, int y, Line line,int dirX, int dirY) {
 		line.direction(dirX, dirY);
+		line.clear();
+		int cpt = 0;
 		for (int i = -4; i < 1; i++) {
 			line.clear();
 			for (int j = 0; j < 5; j++) {
@@ -188,10 +199,8 @@ public class Grid {
 				int x2 = x + dirX * (i + j);
 				if ((pointsState[x2][y2] == 1 && !(points[x2][y2].isLocked(dirX, dirY))) || 
 						(pointsState[x2][y2] == 0 && x2==x && y2==y && !(points[x2][y2].isLocked(dirX, dirY)))) {
-					
-					line.addPoint(new Point(x2*this.square+this.square/2-5,y2*this.square+this.square/2-5));
-					
-						
+					Point p = new Point(x2*this.square+this.square/2-5,y2*this.square+this.square/2-5);
+					line.addPoint(p);
 					
 					if (x2 == x && y2 ==y && !checkGameOver) {
 						line.setIndexclickedPoint(new Point(x2*this.square+this.square/2-5,y2*this.square+this.square/2-5));
@@ -201,24 +210,17 @@ public class Grid {
 					break;
 				}
 			}  
-
 			if (line.lineSize() == 5 && !checkGameOver) {
 				Line l = new Line();
 				l = line.copy();
 				possibleLines.add(l);
-				System.out.println(16 + ","+12+" : " + points[16][12].isLocked(dirX, dirY)); // bug  vu ici : un MovePoint ne garde pas ses locks directions
-																							// alors que les points noirs de base oui!
-
+				cpt++;
 			}
 			else if(line.lineSize() == 5 && checkGameOver) {
 				return true;
 			}
-
-
 		}
-
-		if (possibleLines.size() >= 1 ) {
-
+		if (cpt >= 1 ) {
 			return true;
 		}  
 		return false;

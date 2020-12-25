@@ -16,7 +16,7 @@ public class Point  {
         setupDirections(lockedDirections);
     }
 
-  
+   
 	public int getX() {
         return x;
     }
@@ -55,8 +55,7 @@ public class Point  {
     	
     }
     
-    
-    
+   
     private void setupDirections(Map<String, Boolean> map) {
 		map.put("UP",false);
 		map.put("UPRIGHT",false);
@@ -67,6 +66,10 @@ public class Point  {
 		map.put("LEFT",false);
 		map.put("UPLEFT",false);
 	}
+    
+    public void copyDirections(Point p) {
+    	this.lockedDirections = p.lockedDirections;
+    }
     
     public void printDirections() {
     	System.out.print(this.getX() + ","+this.getY() + " : ");
