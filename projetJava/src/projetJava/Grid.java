@@ -127,18 +127,18 @@ public class Grid {
 				// coordonees exactes de la fenetre (de 0,0 a 900,900)
 				int xPoint = xRound*this.square+this.square/2-5;
 				int yPoint = yRound*this.square+this.square/2-5;
-
-				if (isPossibleLine(xRound,yRound) && !checkGameOver) {
+				if ( isPossibleLine(xRound,yRound) && !checkGameOver ) {
 					System.out.println("-----------");
 					System.out.println("taille possibleLines : " + possibleLines.size());
 					if (possibleLines.size() == 1) { // if one line only is possible
 						MovePoint mp = new MovePoint(xPoint,yPoint,score+1);
-						if (mode == "FIVED") mp.copyDirections(points[xRound][yRound]);
 						addLine(possibleLines.get(0));
+						if (mode == "FIVED") mp.copyDirections(points[xRound][yRound]);
 						points[xRound][yRound]=mp;
 						pointsState[xRound][yRound]=1;
 						this.score++;
 						possibleLines.clear(); 
+						System.out.println(xPoint +","+ yPoint);
 					}
 					else if (possibleLines.size() > 1 ) { // if more than one line is possible 
 						for (Line l : possibleLines) {
@@ -146,10 +146,11 @@ public class Grid {
 							int yClicked = l.getIndexclickedPoint().getY();
 							if (xPoint == l.getPoint(4).getX() && yPoint == l.getPoint(4).getY() && isRedraw) {
 								MovePoint mp = new MovePoint(xClicked,yClicked, score+1);
-								if (mode == "FIVED") mp.copyDirections(points[xRound][yRound]);
 								addLine(l);
+								
 								int xRoundClicked = Math.round(xClicked / this.square); 
 								int yRoundClicked = Math.round(yClicked / this.square);
+								if (mode == "FIVED") mp.copyDirections(points[xRoundClicked][yRoundClicked]);
 								points[xRoundClicked][yRoundClicked]=mp;
 								pointsState[xRoundClicked][yRoundClicked]=1;
 								this.score++;
@@ -158,18 +159,21 @@ public class Grid {
 								break;
 							}
 						}
-					}
-					/*System.out.println(17 + ","+12+" : " + points[16][12].isLocked(1, 1));
-					System.out.println(14 + ","+15+" : " + points[15][12].isLocked(1, -1));
-					System.out.println(14 + ","+12+" : " + points[14][12].isLocked(1, 0)); 
-					System.out.println(13 + ","+12+" : " + points[13][12].isLocked(1, 0)); 
-					System.out.println(12 + ","+12+" : " + points[12][12].isLocked(1, 0)); */
+				}
+				
+				}
+					System.out.println(13 + ","+10+" : " + points[16][10].isLocked(1, 0));
+					System.out.println(14 + ","+10+" : " + points[15][10].isLocked(1, 0));
+					System.out.println(15+ ","+10+" : " + points[14][10].isLocked(1, 0)); 
+					System.out.println(16 + ","+10+" : " + points[13][10].isLocked(1, 0)); 
+					System.out.println(17 + ","+10+" : " + points[12][10].isLocked(1, 0)); 
 				}
 			}
-		}
+		
 	}
 
 	private boolean isPossibleLine(int x, int y) {
+		if (isRedraw) return true;
 		Line line = new Line();
 		boolean horizontal = checkLine(x,y,line,1,0);
 		boolean vertical = checkLine(x,y,line,0,1);
@@ -184,14 +188,13 @@ public class Grid {
 		if (horizontal ||vertical ||diag1 || diag2) {
 			return true; 
 		}
-
-		return false;
+		else return false;
 	}
 
 	private boolean checkLine(int x, int y, Line line,int dirX, int dirY) {
 		line.direction(dirX, dirY);
 		line.clear();
-		int cpt = 0;
+		boolean findOneLine = false;
 		for (int i = -4; i < 1; i++) {
 			line.clear();
 			for (int j = 0; j < 5; j++) {
@@ -202,8 +205,9 @@ public class Grid {
 					Point p = new Point(x2*this.square+this.square/2-5,y2*this.square+this.square/2-5);
 					line.addPoint(p);
 					
+					
 					if (x2 == x && y2 ==y && !checkGameOver) {
-						line.setIndexclickedPoint(new Point(x2*this.square+this.square/2-5,y2*this.square+this.square/2-5));
+						line.setIndexclickedPoint(points[x2][y2]);
 					}
 				}
 				else {            	
@@ -214,14 +218,19 @@ public class Grid {
 				Line l = new Line();
 				l = line.copy();
 				possibleLines.add(l);
-				cpt++;
+				findOneLine = true;
 			}
 			else if(line.lineSize() == 5 && checkGameOver) {
 				return true;
 			}
+
+
 		}
-		if (cpt >= 1 ) {
+
+		if ((possibleLines.size() >= 1 && findOneLine) || isRedraw ) {
+			if (isRedraw) return false;
 			return true;
+			
 		}  
 		return false;
 	}
