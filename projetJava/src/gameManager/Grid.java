@@ -7,10 +7,13 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.io.BufferedWriter;
 import java.io.File;
+
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 import components.*;
 
@@ -28,7 +31,8 @@ public class Grid {
 	private boolean redrawDone;
 	private String mode;
 	private String username;
-	
+	private boolean isRecord;
+
 	private final static int gap = 5; //gap found to place points centered in intersection lines
 	private final static int POINT_SIZE = 9;
 
@@ -50,8 +54,9 @@ public class Grid {
 		this.redrawDone = false; // wait the repaint of the grid when the player clicks (cf draw() function)
 		this.mode = gameType;
 		this.username = uname;
-		
-		
+		this.isRecord = false;
+
+
 		//define the state of starting cross points
 		for(int i = 0; i<this.width/this.square; i++) {
 			for(int j = 0; j<this.height/this.square; j++) {
@@ -89,7 +94,7 @@ public class Grid {
 		int xcal = (Xmiddle-(square/2))%square;
 		int ycal = (Ymiddle-(square/2))%square;
 		g2d.setColor(Color.gray);
-		
+
 		// draw background lines of the grid
 		for(int i = 0; i < width/square; i++) {
 			g2d.setColor(Color.gray);
@@ -98,14 +103,14 @@ public class Grid {
 			//draw cols
 			g2d.drawLine(xcal+i*square, 0, xcal+i*square, height);
 		}
-		
+
 		// draw player lines
 		for(int i = 0; i<allDrawnLines.size(); i++) {
 			g2d.setStroke(new BasicStroke(2));
 			g2d.setColor(Color.red);
 			allDrawnLines.get(i).draw(g2d);
 		}
-		
+
 		//draw player points
 		g2d.setColor(Color.black);
 		for(int i = 0; i<this.width/this.square; i++) {
@@ -135,7 +140,7 @@ public class Grid {
 					g2d.fillOval(l.getPoint(4).getX(), l.getPoint(4).getY(), POINT_SIZE, POINT_SIZE);
 					p = new Point(l.getPoint(4).getX(), l.getPoint(4).getY());
 				}
-				
+
 			}
 			redrawDone = true; 
 		}
@@ -147,26 +152,15 @@ public class Grid {
 		int yRound = Math.round(y / this.square);
 		if(possibleMoves().size()==0) {
 			System.out.println("GAME OVER : Score : "+score);
-			File file =new File("src/scoreboard.txt");
-			FileWriter fileWritter;
-			try {
-				fileWritter = new FileWriter(file,true);
-				BufferedWriter bufferWritter = new BufferedWriter(fileWritter);
-	            bufferWritter.write(username + " : " + score);
-	            bufferWritter.close();
-	            fileWritter.close();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}        
-            
+			writeInScoreboard("HUMAN");      
+
 		}
 		if((maxX>=xRound) && (minX<=xRound) && (maxY>=yRound) && (minY<=yRound)) {
 			if (pointsState[xRound][yRound] == 0 || possibleLines.size() > 1) {
 				// coordinates in the window (from 0,0 to 900,900)
 				int xPoint = xRound*this.square+this.square/2-gap;
 				int yPoint = yRound*this.square+this.square/2-gap;
-				
+
 				if (isPossibleLine(xRound,yRound) && !checkGameOver ) {	
 					if (possibleLines.size() == 1) { // if one line only is possible
 						MovePoint mp = new MovePoint(xPoint,yPoint,score+1);
@@ -177,7 +171,7 @@ public class Grid {
 						this.score++;
 						possibleLines.clear(); 
 					}
-					
+
 					else if (possibleLines.size() > 1 ) { // if more than one line is possible 
 						for (Line l : possibleLines) {
 							int xClicked = l.getIndexclickedPoint().getX();
@@ -196,60 +190,69 @@ public class Grid {
 								break;
 							}
 						}
-				}
-				
-				}
-				
-				
+					}
+
 				}
 			}
+		}
 	}
-	
+
 	public boolean launchAlgorithm() {
-			if (possibleMoves().size() > 0 ) {
-				
+		if (possibleMoves().size() > 0 ) {
+
 			int i = (int) Math.floor(Math.random() * possibleMoves().size());
 			int x = possibleMoves().get(i).getX();
 			int y = possibleMoves().get(i).getY();
-			
+
 			int xRound = Math.round(x / this.square); 
 			int yRound = Math.round(y / this.square);
-			
+
 			int xPoint = xRound*this.square+this.square/2-gap;
 			int yPoint = yRound*this.square+this.square/2-gap;
 			if (xRound > 0 && isPossibleLine(xRound,yRound)) {
-				
-			MovePoint mp = new MovePoint(xPoint,yPoint,score+1);
-			int j = (int) Math.floor(Math.random() * possibleLines.size());
-			addLine(possibleLines.get(j));
-			if (mode == "FIVED") mp.copyDirections(points[xRound][yRound]);
-			points[xRound][yRound]=mp;
-			pointsState[xRound][yRound]=1;
-			this.score++;
-			possibleLines.clear();
+
+				MovePoint mp = new MovePoint(xPoint,yPoint,score+1);
+				int j = (int) Math.floor(Math.random() * possibleLines.size());
+				addLine(possibleLines.get(j));
+				if (mode == "FIVED") mp.copyDirections(points[xRound][yRound]);
+				points[xRound][yRound]=mp;
+				pointsState[xRound][yRound]=1;
+				this.score++;
+				possibleLines.clear();
 			}
 			return true;
 		}
-			else if(possibleMoves().size()==0) {
-				System.out.println("GAME OVER : Score : "+score);
-				File file =new File("src/scoreboard.txt");
-				FileWriter fileWritter;
-				try {
-					fileWritter = new FileWriter(file,true);
-					BufferedWriter bufferWritter = new BufferedWriter(fileWritter);
-					bufferWritter.newLine();
-		            bufferWritter.write(username + " : " + score + " (" + mode + ")");
-		            bufferWritter.close();
-		            fileWritter.close();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}        
-	            
-			}
-			 return false;
+		else if(possibleMoves().size()==0) {
+			writeInScoreboard("COMPUTER");
+		}
+		return false;
 	}
 	
+	private void writeInScoreboard(String playerType) {
+		File file =new File("/src/scoreboard.txt");
+		FileWriter fileWritter;
+		try {
+			fileWritter = new FileWriter(file,true);
+			BufferedWriter bufferWritter = new BufferedWriter(fileWritter);
+			bufferWritter.newLine();
+			bufferWritter.write(username + " : " + score + " (" + mode + ")  ("+playerType+")");
+			bufferWritter.close();
+			fileWritter.close();
+			Scanner sc = new Scanner(file);
+			if (score > sc.nextInt() ) {
+				RandomAccessFile writer = new RandomAccessFile(file, "rw");
+				writer.seek(0);
+				writer.writeBytes(""+score);
+				writer.close();
+				this.isRecord = true;
+			}
+			sc.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}  
+	}
+
 
 	private boolean isPossibleLine(int x, int y) {
 		if (redrawDone) return true;
@@ -268,7 +271,7 @@ public class Grid {
 		line.direction(dirX, dirY);
 		line.clear();
 		boolean findOneLine = false; //bug fix where points directions were locked even if they're not possible
-		
+
 		// check both sides of the directions
 		for (int i = -4; i < 1; i++) { 
 			line.clear();
@@ -301,7 +304,7 @@ public class Grid {
 		if ((possibleLines.size() >= 1 && findOneLine) )  {
 			return true;	
 		}  
-		
+
 		else return false;
 	}
 
@@ -317,8 +320,8 @@ public class Grid {
 					if(i!=0) points[x][y].lockDirection("DOWNLEFT");
 					break;
 				case "FALL":
-					if(i!=4) points[x][y].lockDirection("UPLEFT");
-					if(i!=0) points[x][y].lockDirection("DOWNRIGHT");
+					if(i!=4) points[x][y].lockDirection("DOWNRIGHT");
+					if(i!=0) points[x][y].lockDirection("UPLEFT");
 					break;
 				case "VERTI":
 					if(i!=4) points[x][y].lockDirection("DOWN");
@@ -357,7 +360,7 @@ public class Grid {
 		}
 	}
 
-	public List<Point> possibleMoves() {
+	private List<Point> possibleMoves() {
 		checkGameOver = true;
 		List<Point> allMovesPossible = new ArrayList<Point>();
 		for(int i = minX; i<=maxX; i++) {
@@ -369,6 +372,20 @@ public class Grid {
 		}
 		checkGameOver = false;
 		return allMovesPossible;
+	}
+
+	public int getScore() {
+		return score;
+	}
+
+	public boolean isGameOver() {
+		if (possibleMoves().size()==0) return true;
+		else return false;
+	}
+
+	public boolean isRecord() {
+		if (isRecord) return true;
+		else return false;
 	}
 
 }
