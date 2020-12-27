@@ -1,4 +1,4 @@
-package projetJava;
+package components;
 
 import java.util.Comparator;
 import java.util.HashMap;
@@ -81,7 +81,7 @@ public class Point  {
     	System.out.println("");
     }
     
- // Impl�mentation d'une comparaison entre points
+    // Implementation d'une comparaison entre points
  	// Source : https://stackoverflow.com/questions/3077746/how-to-sort-an-array-of-objectspoints-in-java 
  	class PointSort implements Comparator<Point>{
  		@Override

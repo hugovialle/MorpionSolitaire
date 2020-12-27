@@ -1,4 +1,4 @@
-package projetJava;
+package components;
 
 
 import java.awt.Graphics;
@@ -8,11 +8,12 @@ public class Line{
 
 	private ArrayList<Point> line;
 	private String direction;
-	private Point indexclickedPoint;
+	private Point clickedPoint;
 	
 	public Line() {
 		this.line = new ArrayList<Point>();
-		this.indexclickedPoint = null;
+		this.clickedPoint = null;
+		this.direction = null;
 	}
 	
 	public String getDirection() {
@@ -59,44 +60,15 @@ public class Line{
 		Line l = new Line();
 		l.line = new ArrayList<Point>(this.line);
 		l.direction = this.direction;
-		l.indexclickedPoint = this.indexclickedPoint;
+		l.clickedPoint = this.clickedPoint;
 		return l;
 	}
 
-	public void setIndexclickedPoint(Point indexclickedPoint) {
-		this.indexclickedPoint = indexclickedPoint;
+	public void setclickedPoint(Point indexclickedPoint) {
+		this.clickedPoint = indexclickedPoint;
 	}
 	
 	public Point getIndexclickedPoint() {
-		return indexclickedPoint;
+		return clickedPoint;
 	}
-
-	
-
-	
-	
-//	public void lockPointsDirections() {
-//		switch(this.direction) {
-//		case("RISE"):
-//			for(int i = 0; i<line.size(); i++) {
-//				if(i!=4) line.get(i).lockDirection("UPRIGHT");
-//				if(i!=0) line.get(i).lockDirection("DOWNLEFT");
-//			}
-//		case("FALL"):
-//			for(int i = 0; i<line.size(); i++) {
-//				if(i!=4) line.get(i).lockDirection("UPLEFT");
-//				if(i!=0) line.get(i).lockDirection("DOWRIGHT");
-//			}
-//		case("VERTI"):
-//			for(int i = 0; i<line.size(); i++) {
-//				if(i!=4) line.get(i).lockDirection("UP");
-//				if(i!=0) line.get(i).lockDirection("DOWN");
-//			}
-//		case("HORI"):
-//			for(int i = 0; i<line.size(); i++) {
-//				if(i!=4) line.get(i).lockDirection("RIGHT");
-//				if(i!=0) line.get(i).lockDirection("LEFT");
-//			}
-//		}
-//	}
 }
