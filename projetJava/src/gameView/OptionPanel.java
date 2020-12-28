@@ -1,3 +1,7 @@
+/*
+ * @author ALVESYohann_VIALLEHugo
+ * @version 18
+ */
 package gameView;
 
 import java.awt.Dimension;
@@ -25,21 +29,16 @@ import gameManager.Scoreboard;
 public class OptionPanel extends JPanel {
 
   private MorpionSolitaireWindow gameWindow;
-
-  /** The button that when clicked, restarts the game. */
-  private JButton restartBtn;
-
-  private JButton gridBtn;
-
+  private JButton restartBtn,gridBtn,textBtn;
   private JTextField text;
-
-  private JButton textBtn;
-
   private JPanel scoreBoard;
+  private JComboBox <String> gameType, playerType;
 
-  private JComboBox <String> gameType;
-  private JComboBox <String> playerType;
-
+  /**
+   * Instantiates a new option panel (right side of the window).
+   * 
+   * @param gameWindow : the frame of the window
+   */
   public OptionPanel(MorpionSolitaireWindow gameWindow) {
     BoxLayout boxlayout = new BoxLayout(this, BoxLayout.Y_AXIS);
     this.setLayout(boxlayout);
@@ -95,18 +94,33 @@ public class OptionPanel extends JPanel {
     this.add(bottom);
     this.add(Box.createRigidArea(new Dimension(300, 350)));
     this.add(scoreBoard);
-
   }
 
+  /**
+   * Gets the game window.
+   *
+   * @return the game window
+   */
   public MorpionSolitaireWindow getGameWindow() {
     return this.gameWindow;
   }
 
+  /**
+   * Sets the new game window
+   *
+   * @param gameWindow : the new game window
+   */
   public void setGameWindow(MorpionSolitaireWindow gameWindow) {
     this.gameWindow = gameWindow;
   }
 
-  private String getGameType(JComboBox < String > gameType) {
+  /**
+   * Gets the game type.
+   *
+   * @param gameType : 5D or 5T
+   * @return FIVED or FIVET
+   */
+  private String getGameType(JComboBox <String> gameType) {
 
     String type = "" + gameType.getSelectedItem();
     if (type.equals("5D")) {
@@ -115,7 +129,13 @@ public class OptionPanel extends JPanel {
     else return "FIVET";
   }
 
-  private String getPlayerType(JComboBox < String > playerType) {
+  /**
+   * Gets the player type.
+   *
+   * @param playerType : HUMAN or COMPUTER
+   * @return HUMAN or COMPUTER
+   */
+  private String getPlayerType(JComboBox <String> playerType) {
 
     String player = "" + playerType.getSelectedItem();
     if (player.equals("Human")) {
@@ -124,8 +144,26 @@ public class OptionPanel extends JPanel {
     else return "COMPUTER";
   }
 
+  /**
+   * The listener interface for receiving option events.
+   * The class that is interested in processing a option
+   * event implements this interface, and the object created
+   * with that class is registered with a component using the
+   * component's addOptionListener method. When
+   * the option event occurs, that object's appropriate
+   * method is invoked.
+   *
+   * @see OptionEvent
+   * @see https://docs.oracle.com/javase/tutorial/uiswing/events/componentlistener.html
+   * 
+   */
   private class OptionListener implements ActionListener {
 
+    /**
+     * Every action done by user is invoking this function
+     *
+     * @param e : event created by an action
+     */
     @Override
     public void actionPerformed(ActionEvent e) {
 
@@ -135,7 +173,6 @@ public class OptionPanel extends JPanel {
       }
 
       Object src = e.getSource();
-
       if (src == restartBtn) {
         gameWindow.restart();
         if (gameWindow.getBoard().isRecord()) {

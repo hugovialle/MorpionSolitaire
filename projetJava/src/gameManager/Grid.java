@@ -1,3 +1,7 @@
+/*
+ * @author ALVESYohann_VIALLEHugo
+ * @version 18
+ */
 package gameManager;
 
 import java.awt.BasicStroke;
@@ -23,10 +27,19 @@ public class Grid {
   private String mode; // 5D or 5T
   private String username; 
   private boolean isRecord;
-
   private final static int gap = 5; //gap found to place points centered in intersection lines
   private final static int POINT_SIZE = 9;
+  private final static String filePath = "./src/scoreboard.txt";
 
+  /**
+   * Instantiates a new grid.
+   *
+   * @param square : side length of a square (or a cell)
+   * @param wid : frame width
+   * @param hei : frame height
+   * @param gameType : can be FIVED or FIVET
+   * @param uname : player username
+   */
   public Grid(int square, int wid, int hei, String gameType, String uname) {
     this.width = wid;
     this.height = hei;
@@ -78,6 +91,13 @@ public class Grid {
     }
   }
 
+  /**
+   * Draw every components on the grid
+   * at each player mouse pressed : draw is reinvoked
+   * source : https://docs.oracle.com/javase/7/docs/api/java/awt/Graphics2D.html
+   * 
+   * @param g2d : Graphics2D class
+   */
   public void draw(Graphics2D g2d) {
     int Xmiddle = width / 2;
     int Ymiddle = height / 2;
@@ -134,14 +154,20 @@ public class Grid {
     }
   }
 
+  /**
+   * When player make a mouse click : move is invoked.
+   * Check if the movePoint clicked by the player can be drawn or not
+   * Ask for propositions if more than one line is possible
+   * @param x : x coordinate where player clicked
+   * @param y : y coordinate where player clicked
+   */
   public void move(int x, int y) {
     // row & columns coordinate calculations  (0,30)
     int xRound = Math.round(x / this.square);
     int yRound = Math.round(y / this.square);
     if (possibleMoves().size() == 0) {
       System.out.println("GAME OVER : Score : " + score);
-      writeInScoreboard("HUMAN");
-
+      writeInScoreboard("HUMAN"); //see below
     }
     if ((maxX >= xRound) && (minX <= xRound) && (maxY >= yRound) && (minY <= yRound)) {
       if (pointsState[xRound][yRound] == 0 || possibleLines.size() > 1) {
@@ -162,8 +188,8 @@ public class Grid {
 
           else if (possibleLines.size() > 1) { // if more than one line is possible 
             for (Line l: possibleLines) {
-              int xClicked = l.getIndexclickedPoint().getX();
-              int yClicked = l.getIndexclickedPoint().getY();
+              int xClicked = l.getclickedPoint().getX();
+              int yClicked = l.getclickedPoint().getY();
               if (xPoint == l.getPoint(4).getX() && yPoint == l.getPoint(4).getY() && redrawDone) {
                 MovePoint mp = new MovePoint(xClicked, yClicked, score + 1);
                 lockPointsDirections(l);
@@ -185,10 +211,17 @@ public class Grid {
     }
   }
 
+  /**
+   * Function to play the game as a computer
+   * No mouse click by player, just check all possible moves and chose one randomly
+   * if more than one line is possible on the point chosen, chose the line randomly also
+   *
+   * @return true if moves still possible, else false
+   */
   public boolean launchAlgorithm() {
     if (possibleMoves().size() > 0) {
 
-      int i = (int) Math.floor(Math.random() * possibleMoves().size());
+      int i = (int) Math.floor(Math.random() * possibleMoves().size()); //random point chose 
       int x = possibleMoves().get(i).getX();
       int y = possibleMoves().get(i).getY();
 
@@ -198,9 +231,8 @@ public class Grid {
       int xPoint = xRound * this.square + this.square / 2 - gap;
       int yPoint = yRound * this.square + this.square / 2 - gap;
       if (xRound > 0 && isPossibleLine(xRound, yRound)) {
-
         MovePoint mp = new MovePoint(xPoint, yPoint, score + 1);
-        int j = (int) Math.floor(Math.random() * possibleLines.size());
+        int j = (int) Math.floor(Math.random() * possibleLines.size()); // random line chose
         lockPointsDirections(possibleLines.get(j));
         if (mode == "FIVED") mp.copyDirections(points[xRound][yRound]);
         points[xRound][yRound] = mp;
@@ -216,8 +248,14 @@ public class Grid {
     return false;
   }
 
+  /**
+   * Write in scoreboard.txt the score of the game when it's game over.
+   *
+   * @param playerType : HUMAN or COMPUTER
+   * @see move & launchAlgorithm functions
+   */
   private void writeInScoreboard(String playerType) {
-    File file = new File("src/scoreboard.txt");
+    File file = new File(filePath);
     FileWriter fileWritter;
     try {
       fileWritter = new FileWriter(file, true);
@@ -241,6 +279,13 @@ public class Grid {
     }
   }
 
+  /**
+   * Checks if a line is drawable
+   *
+   * @param x : point coordinate X
+   * @param y : point coordinate Y
+   * @return true, if at least one line is possible
+   */
   private boolean isPossibleLine(int x, int y) {
     if (redrawDone) return true;
     Line line = new Line();
@@ -254,6 +299,17 @@ public class Grid {
     else return false;
   }
 
+  /**
+   * Check if a line is drawable in a specific direction (HORI,VERTI,RISE,FALL)
+   * Fill the possibleLines ArrayList if at least one line is possible
+   *
+   * @param x : point coordinate X
+   * @param y : point coordinate Y
+   * @param line : the new Line which will be copied in possibleLines if it's a complete line
+   * @param dirX : 1 for HORI, RISE, and FALL, 0 for VERTI
+   * @param dirY : 0 for HORI, -1 for RISE, 1 for FALL and VERTI
+   * @return true if at least one line is drawable in the direction, else false
+   */
   private boolean checkLine(int x, int y, Line line, int dirX, int dirY) {
     line.direction(dirX, dirY);
     line.clear();
@@ -293,6 +349,12 @@ public class Grid {
     else return false;
   }
 
+  /**
+   * Player chose the line to draw. 
+   * After this, we want to lock every point of this line in the line direction
+   *
+   * @param line : line to draw
+   */
   private void lockPointsDirections(Line line) {
     allDrawnLines.add(line);
     for (int i = 0; i < line.lineSize(); i++) {
@@ -345,6 +407,12 @@ public class Grid {
     }
   }
 
+  /**
+   * Check if a move is still possible from the player
+   * if not, game is over
+   *
+   * @return every possible moves for the player
+   */
   private List <Point> possibleMoves() {
     checkGameOver = true;
     List < Point > allMovesPossible = new ArrayList < Point > ();
@@ -359,15 +427,30 @@ public class Grid {
     return allMovesPossible;
   }
 
+  /**
+   * Gets the score.
+   *
+   * @return player score
+   */
   public int getScore() {
     return score;
   }
 
+  /**
+   * Checks if it's game over.
+   *
+   * @return true if game is over, else false
+   */
   public boolean isGameOver() {
     if (possibleMoves().size() == 0) return true;
     else return false;
   }
 
+  /**
+   * Checks if it's a new record on the app
+   *
+   * @return true if it's a new record, else false
+   */
   public boolean isRecord() {
     if (isRecord) return true;
     else return false;

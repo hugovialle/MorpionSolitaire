@@ -1,10 +1,11 @@
+/*
+ * @author ALVESYohann_VIALLEHugo
+ * @version 17
+ */
 package gameManager;
 
 import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.GridLayout;
-import java.awt.RenderingHints;
 import java.io.*;
 
 import javax.swing.JLabel;
@@ -12,9 +13,15 @@ import javax.swing.JPanel;
 
 @SuppressWarnings("serial")
 public class Scoreboard extends JPanel {
+	private final static String filePath = "./src/scoreboard.txt";
+  /**
+   * Instantiates a new scoreboard.
+   * Everytime a player finish his game, his score and the parameters chosen
+   * are saved in the scoreboard.txt file by writing it on the last line
+   * source : https://fr.wikiversity.org/wiki/Java/Gestion_de_fichiers
+   */
   public Scoreboard() {
-    // source : https://fr.wikiversity.org/wiki/Java/Gestion_de_fichiers
-    File fichier = new File("src/scoreboard.txt");
+    File fichier = new File(filePath);
     int car;
     StringBuffer contenu = new StringBuffer("");
     FileInputStream ftemp = null;
@@ -42,14 +49,5 @@ public class Scoreboard extends JPanel {
       scoreByLine.setFont(new Font("Sans-Serif", Font.PLAIN, 13));
       this.add(scoreByLine);
     }
-  }
-
-  @Override
-  public void paintComponent(Graphics g) {
-    super.paintComponent(g);
-    Graphics2D g2D = (Graphics2D) g;
-    // better graphics for the window (see https://docs.oracle.com/javase/tutorial/2d/advanced/quality.html)
-    g2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
   }
 }
