@@ -162,6 +162,8 @@ public class Grid {
    * @param y : y coordinate where player clicked
    */
   public void move(int x, int y) {
+	  assert (x < width);
+	  assert (y < height);
     // row & columns coordinate calculations  (0,30)
     int xRound = Math.round(x / this.square);
     int yRound = Math.round(y / this.square);
@@ -266,7 +268,7 @@ public class Grid {
       fileWritter.close();
       Scanner sc = new Scanner(file);
       if (score > sc.nextInt()) {
-        RandomAccessFile writer = new RandomAccessFile(file, "rw");
+        RandomAccessFile writer = new RandomAccessFile(file, "rw"); // to overwrite the first line with the best score
         writer.seek(0);
         writer.writeBytes("" + score);
         writer.close();
@@ -320,7 +322,7 @@ public class Grid {
       for (int j = 0; j < 5; j++) {
         int x2 = x + dirX * (i + j);
         int y2 = y + dirY * (i + j);
-        if ((pointsState[x2][y2] == 1 && !(points[x2][y2].isLocked(dirX, dirY))) || (pointsState[x2][y2] == 0 && x2 == x && y2 == y && !(points[x2][y2].isLocked(dirX, dirY)))) {
+        if ((pointsState[x2][y2] == 1 && !(points[x2][y2].isLocked(dirX, dirY,i+j))) || (pointsState[x2][y2] == 0 && x2 == x && y2 == y && !(points[x2][y2].isLocked(dirX, dirY,i+j)))) {
           Point p = new Point(x2 * this.square + this.square / 2 - gap, y2 * this.square + this.square / 2 - gap);
           line.addPoint(p);
           if (x2 == x && y2 == y && !checkGameOver) {

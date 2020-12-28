@@ -5,7 +5,6 @@
 package gameView;
 
 import java.awt.Dimension;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
@@ -71,7 +70,7 @@ public class OptionPanel extends JPanel {
     gridBtn = new JButton("Best grid");
     gridBtn.addActionListener(ol);
 
-    text = new JTextField("Enter your username", 16);
+    text = new JTextField("Write username", 20);
     textBtn = new JButton("Enter");
     textBtn.addActionListener(ol);
 

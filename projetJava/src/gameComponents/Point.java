@@ -69,27 +69,35 @@ public class Point {
    *
    * @param dirX : 1 for HORI, RISE, and FALL, 0 for VERTI
    * @param dirY : 0 for HORI, -1 for RISE, 1 for FALL and VERTI
+   * @param i : Point position on the line tab
    * @return true if the point is locked in the line direction, else false
    */
-  public boolean isLocked(int dirX, int dirY) {
+  public boolean isLocked(int x, int y, int i) {
+	    if (x == 1) {
+	      if (y == 0) {
+	    	  if (i == 4) return isLocked("LEFT");
+	    	  else if (i == 0) return isLocked("RIGHT");
+	    	  else return (isLocked("LEFT") && isLocked("RIGHT"));
+	      }
+	      else if (y == -1) {
+	    	  if (i == 4) return isLocked("DOWNLEFT");
+	    	  else if (i == 0) return isLocked("UPRIGHT");
+	    	  else return (isLocked("DOWNLEFT") && isLocked("UPRIGHT"));
+	      }
+	      else {
+	    	  if (i == 4) return isLocked("UPLEFT");
+	    	  else if (i == 0) return isLocked("DOWNRIGHT");
+	    	  else return (isLocked("DOWNRIGHT") || isLocked("UPLEFT"));
+	      }
+	    }
+	    else {
+	    	if (i == 4) return isLocked("UP");
+	  	  	else if (i == 0) return isLocked("DOWN");
+	  	  	else return (isLocked("UP") || isLocked("DOWN"));
+	    }
 
-    if (dirX == 1) {
-      if (dirY == 0) {
-        return (isLocked("LEFT") || isLocked("RIGHT"));
-      }
-      else if (dirY == -1) {
-        return (isLocked("DOWNLEFT") || isLocked("UPRIGHT"));
-      }
-      else {
-        return (isLocked("DOWNRIGHT") || isLocked("UPLEFT"));
-      }
-    }
-    else {
-      return (isLocked("UP") || isLocked("DOWN"));
-    }
-
-  }
-
+	  }
+  
   /**
    * Initiate directions on false
    *

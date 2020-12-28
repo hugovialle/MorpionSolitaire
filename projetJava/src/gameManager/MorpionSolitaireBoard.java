@@ -35,46 +35,55 @@ public class MorpionSolitaireBoard extends JPanel {
    * @param gameType : FIVED or FIVET
    * @param playerType : HUMAN or COMPUTER
    */
-  public MorpionSolitaireBoard(String username, String gameType, String playerType) {
+  public MorpionSolitaireBoard(String username, String gameType, String playerType){
     this.username = username;
     this.gameType = gameType;
     this.playerType = playerType;
+    
+    if (gameType != "FIVED" && gameType != "FIVET") throw new IllegalArgumentException("mode is incorrect");
+    else if (playerType != "HUMAN" && playerType != "COMPUTER") throw new IllegalArgumentException("player type is incorrect");
+    else if (username.length() > 20) throw new IllegalArgumentException("username is too long (>20char)");
+    
     setPreferredSize(new Dimension(900, 900));
     setBackground(Color.white);
+    	if (playerType == "HUMAN") {
+    		  this.grid = new Grid(30, 900, 900, gameType, username);	
+    	      this.score = this.grid.getScore();
+    	      scoreLabel = new JLabel("Score : " + this.grid.getScore());
+    	      scoreLabel.setFont(new Font("Sans-Serif", Font.PLAIN, 25));
+    	      scoreLabel.setBackground(Color.white);
+    	      scoreLabel.setOpaque(true);
 
-    if (playerType == "HUMAN") {
-      this.grid = new Grid(30, 900, 900, gameType, username);
-      this.score = this.grid.getScore();
-      scoreLabel = new JLabel("Score : " + this.grid.getScore());
-      scoreLabel.setFont(new Font("Sans-Serif", Font.PLAIN, 25));
-      scoreLabel.setBackground(Color.white);
-      scoreLabel.setOpaque(true);
+    	      this.add(scoreLabel);
+    	      addMouseListener(new MouseAdapter() {
+    	    	  @Override
+    	        public void mousePressed(MouseEvent e) {
+    	          grid.move(e.getX(), e.getY());
+    	          score = grid.getScore();
+    	          if (grid.isGameOver()) {
+    	            scoreLabel.setText("GAME OVER - Score : " + score);
+    	          }
+    	          else {
+    	            scoreLabel.setText("Score : " + score);
+    	          }
+    	          repaint();
+    	        }
+    	      });
+    	    }
+    	    else if (playerType == "COMPUTER") {
+    	      this.grid = new Grid(30, 900, 900, gameType, username);
+    	      while (grid.launchAlgorithm()) {
+    	        score = grid.getScore();
+    	        scoreLabel.setText("Score : " + score);
+    	        repaint();
+    	      }
 
-      this.add(scoreLabel);
-      addMouseListener(new MouseAdapter() {@Override
-        public void mousePressed(MouseEvent e) {
-          grid.move(e.getX(), e.getY());
-          score = grid.getScore();
-          if (grid.isGameOver()) {
-            scoreLabel.setText("GAME OVER - Score : " + score);
-          }
-          else {
-            scoreLabel.setText("Score : " + score);
-          }
-          repaint();
-        }
-      });
-    }
-    else if (playerType == "COMPUTER") {
-      this.grid = new Grid(30, 900, 900, gameType, username);
-      while (grid.launchAlgorithm()) {
-        score = grid.getScore();
-        scoreLabel.setText("Score : " + score);
-        repaint();
-      }
-
-    }
-    new Scoreboard();
+    	    }
+    	    new Scoreboard();
+    	    
+     
+    
+    
   }
 
   /**
