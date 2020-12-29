@@ -70,7 +70,7 @@ public class OptionPanel extends JPanel {
     gridBtn = new JButton("Best grid");
     gridBtn.addActionListener(ol);
 
-    text = new JTextField("Write username", 20);
+    text = new JTextField("Username", 15);
     textBtn = new JButton("Enter");
     textBtn.addActionListener(ol);
 
@@ -177,7 +177,7 @@ public class OptionPanel extends JPanel {
         if (gameWindow.getBoard().isRecord()) {
           BufferedImage img = new BufferedImage(gameWindow.getBoard().getWidth(), gameWindow.getBoard().getHeight(), BufferedImage.TYPE_INT_RGB);
           gameWindow.getBoard().paint(img.getGraphics());
-          File outputfile = new File("src/record.png");
+          File outputfile = new File("projetJava/src/record.png");
           try {
             ImageIO.write(img, "png", outputfile);
           } catch(IOException e2) {
@@ -187,7 +187,7 @@ public class OptionPanel extends JPanel {
       }
       else if (src == textBtn) {
         gameWindow.newUsername(text.getText());
-        text.setText("Enter a username");
+        text.setText("Username");
       }
       else if (src == gameType) {
         String selected = getGameType(gameType);
@@ -201,7 +201,7 @@ public class OptionPanel extends JPanel {
         JFrame frame = new JFrame();
         frame.setTitle("Best grid");
         JLabel imageLabel = new JLabel();
-        imageLabel.setIcon(new ImageIcon("src/record.png"));
+        imageLabel.setIcon(new ImageIcon("projetJava/src/record.png"));
         frame.add(imageLabel);
         frame.pack();
         frame.setVisible(true);

@@ -13,7 +13,7 @@ import javax.swing.JPanel;
 
 @SuppressWarnings("serial")
 public class Scoreboard extends JPanel {
-	private final static String filePath = "./src/scoreboard.txt";
+	private final static String filePath = "projetJava/src/scoreboard.txt";
   /**
    * Instantiates a new scoreboard.
    * Everytime a player finish his game, his score and the parameters chosen
@@ -32,7 +32,7 @@ public class Scoreboard extends JPanel {
       ftemp.close();
     }
     catch(FileNotFoundException e) {
-      System.out.println("Fichier non trouve. Veuillez changer le chemin d'accès");
+      System.out.println("Fichier non trouve. Veuillez changer le chemin d'accï¿½s");
     }
     catch(IOException ioe) {
       System.out.println("Exception " + ioe);

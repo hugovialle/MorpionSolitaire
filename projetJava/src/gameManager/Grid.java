@@ -29,7 +29,7 @@ public class Grid {
   private boolean isRecord;
   private final static int gap = 5; //gap found to place points centered in intersection lines
   private final static int POINT_SIZE = 9;
-  private final static String filePath = "./src/scoreboard.txt";
+  private final static String filePath = "projetJava/src/scoreboard.txt";
 
   /**
    * Instantiates a new grid.
