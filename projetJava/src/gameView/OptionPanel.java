@@ -32,6 +32,7 @@ public class OptionPanel extends JPanel {
   private JTextField text;
   private JPanel scoreBoard;
   private JComboBox <String> gameType, playerType;
+  private final static String filePath = "./src/record.png";
 
   /**
    * Instantiates a new option panel (right side of the window).
@@ -165,7 +166,16 @@ public class OptionPanel extends JPanel {
      */
     @Override
     public void actionPerformed(ActionEvent e) {
-
+      if (gameWindow.getBoard().isRecord()) {
+            BufferedImage img = new BufferedImage(gameWindow.getBoard().getWidth(), gameWindow.getBoard().getHeight(), BufferedImage.TYPE_INT_RGB);
+            gameWindow.getBoard().paint(img.getGraphics());
+            File outputfile = new File(filePath);
+            try {
+              ImageIO.write(img, "png", outputfile);
+            } catch(IOException e2) {
+              e2.printStackTrace();
+            }
+       }
       // No window to update
       if (gameWindow == null) {
         return;
@@ -174,16 +184,7 @@ public class OptionPanel extends JPanel {
       Object src = e.getSource();
       if (src == restartBtn) {
         gameWindow.restart();
-        if (gameWindow.getBoard().isRecord()) {
-          BufferedImage img = new BufferedImage(gameWindow.getBoard().getWidth(), gameWindow.getBoard().getHeight(), BufferedImage.TYPE_INT_RGB);
-          gameWindow.getBoard().paint(img.getGraphics());
-          File outputfile = new File("projetJava/src/record.png");
-          try {
-            ImageIO.write(img, "png", outputfile);
-          } catch(IOException e2) {
-            e2.printStackTrace();
-          }
-        }
+        
       }
       else if (src == textBtn) {
         gameWindow.newUsername(text.getText());
@@ -201,7 +202,7 @@ public class OptionPanel extends JPanel {
         JFrame frame = new JFrame();
         frame.setTitle("Best grid");
         JLabel imageLabel = new JLabel();
-        imageLabel.setIcon(new ImageIcon("projetJava/src/record.png"));
+        imageLabel.setIcon(new ImageIcon(filePath));
         frame.add(imageLabel);
         frame.pack();
         frame.setVisible(true);

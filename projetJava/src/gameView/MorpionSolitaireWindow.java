@@ -9,8 +9,6 @@ import java.awt.Dimension;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import gameManager.MorpionSolitaireBoard;
-
 @SuppressWarnings("serial")
 public class MorpionSolitaireWindow extends JFrame {
 

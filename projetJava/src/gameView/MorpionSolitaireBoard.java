@@ -2,7 +2,7 @@
  * @author ALVESYohann_VIALLEHugo
  * @version 18
  */
-package gameManager;
+package gameView;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -15,6 +15,8 @@ import java.awt.event.MouseEvent;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+
+import gameManager.Grid;
 
 
 @SuppressWarnings("serial")
@@ -79,7 +81,7 @@ public class MorpionSolitaireBoard extends JPanel {
     	      }
 
     	    }
-    	    new Scoreboard();
+    	    
     	    
      
     

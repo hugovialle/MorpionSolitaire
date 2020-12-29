@@ -13,7 +13,7 @@ import javax.swing.JPanel;
 
 @SuppressWarnings("serial")
 public class Scoreboard extends JPanel {
-	private final static String filePath = "projetJava/src/scoreboard.txt";
+	private final static String filePath = "./src/scoreboard.txt";
   /**
    * Instantiates a new scoreboard.
    * Everytime a player finish his game, his score and the parameters chosen

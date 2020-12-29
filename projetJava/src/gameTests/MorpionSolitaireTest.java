@@ -1,11 +1,9 @@
 package gameTests;
 
 import static org.junit.Assert.*;
-
 import org.junit.jupiter.api.Test;
 
-import gameManager.Grid;
-import gameManager.MorpionSolitaireBoard;
+import gameView.MorpionSolitaireBoard;
 
 public class MorpionSolitaireTest {
 	
